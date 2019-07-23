@@ -12,13 +12,8 @@
 #ifndef __JCP_ASYM_KEY_H__
 #define __JCP_ASYM_KEY_H__
 
-#if !defined(JCP_USE_OPENSSL) && !defined(JCP_USE_MBEDTLS)
-#if (defined(HAS_MBEDCRYPTO) && HAS_MBEDCRYPTO) || (defined(HAS_MBEDTLS) && HAS_MBEDTLS)
-#define SIGNEDSECUREFILE_USE_MBEDTLS 1
-#elif defined(HAS_OPENSSL) && HAS_OPENSSL
-#define SIGNEDSECUREFILE_USE_OPENSSL 1
-#endif
-#endif
+#define HAS_OPENSSL 1
+#define HAS_MBEDCRYPTO 1
 
 #if defined(HAS_OPENSSL) && HAS_OPENSSL
 #include <openssl/rsa.h>
@@ -32,92 +27,33 @@
 
 namespace jcp {
 
-	class AsymKey
-	{
-	private:
-		void cleanupKeys();
+    class AsymKey
+    {
+    public:
+        virtual bool isRSAKey() const = 0;
+        virtual bool isECKey() const = 0;
 
+        virtual bool setPublicKey(const unsigned char *key, int length) = 0;
+        virtual bool setPrivateKey(const unsigned char *key, int length) = 0;
+        virtual int getKeySize() const = 0;
+
+    public:
 #if defined(HAS_OPENSSL) && HAS_OPENSSL
-	private:
-		RSA *ossl_rsa;
-		EC_KEY *ossl_ec;
-		bool ossl_autofree;
-		unsigned long ossl_err;
-
-		void opensslCleanup();
-
-	public:
-		unsigned long getOpensslError() { return this->ossl_err; }
-		RSA *getOpensslRSAKey() { return this->ossl_rsa; }
-		EC_KEY *getOpensslECKey() { return this->ossl_ec; }
-		void setOpensslRSAKey(RSA *rsa, bool autofree = false) {
-			cleanupKeys();
-			this->ossl_rsa = rsa;
-			this->ossl_autofree = autofree;
-		}
-		void setOpensslECKey(EC_KEY *ec, bool autofree = false) {
-			cleanupKeys();
-			this->ossl_ec = ec;
-			this->ossl_autofree = autofree;
-		}
-		bool isOpensslKey() const {
-			return ossl_rsa || ossl_ec;
-		}
+        virtual unsigned long getOpensslError() const = 0;
+        virtual const RSA *getOpensslRSAKey() const = 0;
+        virtual const EC_KEY *getOpensslECKey() const = 0;
+        virtual void copyFromOpensslRSAKey(const RSA *rsa) = 0;
+        virtual void copyFromOpensslECKey(const EC_KEY *ec) = 0;
 #endif
 
 #if (defined(HAS_MBEDCRYPTO) && HAS_MBEDCRYPTO) || (defined(HAS_MBEDTLS) && HAS_MBEDTLS)
-	private:
-		mbedtls_ecp_keypair *mbed_ec;
-		mbedtls_rsa_context *mbed_rsa;
-		unsigned long mbed_err;
-
-		void mbedCleanup();
-
-	public:
-		unsigned long getMbedtlsError() { return this->mbed_err; }
-		const mbedtls_rsa_context *getMbedtlsRSAKey() const { return this->mbed_rsa; }
-		const mbedtls_ecp_keypair *getMbedtlsECKey() const { return this->mbed_ec; }
-		void setMbedtlsRSAKey(mbedtls_rsa_context *rsa);
-		void setMbedtlsECKey(mbedtls_ecp_keypair *ec);
-		bool isMbedtlsKey() const {
-			return mbed_rsa || mbed_ec;
-		}
-
-		bool setPublicKey(const unsigned char *key, int length);
-		bool setPrivateKey(const unsigned char *key, int length);
+        virtual unsigned long getMbedtlsError() const = 0;
+        virtual const mbedtls_rsa_context *getMbedtlsRSAKey() const = 0;
+        virtual const mbedtls_ecp_keypair *getMbedtlsECKey() const = 0;
+        virtual void copyFromMbedtlsRSAKey(const mbedtls_rsa_context *rsa) = 0;
+        virtual void copyFromMbedtlsECKey(const mbedtls_ecp_keypair *ec) = 0;
 #endif
-
-	public:
-		AsymKey();
-		virtual ~AsymKey();
-
-		bool isRSAKey() const {
-			bool result = false;
-#if defined(HAS_OPENSSL) && HAS_OPENSSL
-			result = result || (this->ossl_rsa != NULL);
-#endif
-#if (defined(HAS_MBEDCRYPTO) && HAS_MBEDCRYPTO) || (defined(HAS_MBEDTLS) && HAS_MBEDTLS)
-			result = result || (this->mbed_rsa != NULL);
-#endif
-			return result;
-		}
-
-		bool isECKey() const {
-			bool result = false;
-#if defined(HAS_OPENSSL) && HAS_OPENSSL
-			result = result || (this->ossl_ec != NULL);
-#endif
-#if (defined(HAS_MBEDCRYPTO) && HAS_MBEDCRYPTO) || (defined(HAS_MBEDTLS) && HAS_MBEDTLS)
-			result = result || (this->mbed_ec != NULL);
-#endif
-			return result;
-		}
-
-		bool setRSAPublicKey(const unsigned char *key, int length);
-		bool setRSAPrivateKey(const unsigned char *key, int length);
-		bool setECPublicKey(const unsigned char *key, int length);
-		bool setECPrivateKey(const unsigned char *key, int length);
-	};
+    };
 
 }
 
