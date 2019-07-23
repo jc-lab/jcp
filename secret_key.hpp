@@ -10,7 +10,9 @@
 #ifndef __JCP_SECRET_KEY_H__
 #define __JCP_SECRET_KEY_H__
 
+#include <memory>
 #include <vector>
+#include <assert.h>
 
 namespace jcp {
     namespace internal {
@@ -22,9 +24,17 @@ namespace jcp {
         friend class internal::KeyAccessor;
 
         std::vector<unsigned char> plain_key_;
+
+    private:
+		SecretKey(const SecretKey& o) { assert(false);  }
+
     public:
 		SecretKey() {}
-        SecretKey(const unsigned char *key, int len);
+		SecretKey(const unsigned char* key, int len);
+
+        static std::unique_ptr<SecretKey> create(const unsigned char *key, int len) {
+            return std::unique_ptr<SecretKey>(new SecretKey(key, len));
+        }
 
     };
 

@@ -28,6 +28,10 @@ namespace jcp {
         virtual std::unique_ptr<Result<void>> update(const void *buf, size_t length) = 0;
         virtual std::unique_ptr<Result<void>> digest(unsigned char *buf) = 0;
         virtual std::unique_ptr<Result<Buffer>> digest() = 0;
+
+		std::unique_ptr<Result<void>> update(unsigned char data) {
+			return update(&data, 1);
+		}
     };
 
     class MessageDigestFactory {
