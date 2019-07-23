@@ -1,5 +1,5 @@
 /**
- * @file	message_digest.hpp
+ * @file	message_digest_algo.hpp
  * @author	Jichan (development@jc-lab.net / http://ablog.jc-lab.net/ )
  * @date	2019/07/19
  * @copyright Copyright (C) 2019 jichan.\n
@@ -7,8 +7,8 @@
  *            of the Apache License 2.0.  See the LICENSE file for details.
  */
 
-#ifndef __JCP_MESSAGE_DIGEST_H__
-#define __JCP_MESSAGE_DIGEST_H__
+#ifndef __JCP_MESSAGE_DIGEST_ALGO_H__
+#define __JCP_MESSAGE_DIGEST_ALGO_H__
 
 #include "algo.hpp"
 #include <string>
@@ -50,4 +50,4 @@ namespace jcp {
 
 }
 
-#endif // __JCP_MESSAGE_DIGEST_H__
+#endif // __JCP_MESSAGE_DIGEST_ALGO_H__
