@@ -30,7 +30,9 @@ namespace jcp {
 
     public:
 		SecretKey() {}
-		SecretKey(const unsigned char* key, int len);
+		SecretKey(const unsigned char* key, int len)
+                : plain_key_(&key[0], &key[len])
+        {}
 
         static std::unique_ptr<SecretKey> create(const unsigned char *key, int len) {
             return std::unique_ptr<SecretKey>(new SecretKey(key, len));
