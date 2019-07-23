@@ -32,11 +32,11 @@ namespace jcp {
         std::string name_;
 
     public:
-        static const MacAlgorithm HmacWithSHA1;
-        static const MacAlgorithm HmacWithSHA224;
-        static const MacAlgorithm HmacWithSHA256;
-        static const MacAlgorithm HmacWithSHA384;
-        static const MacAlgorithm HmacWithSHA512;
+        static const MacAlgorithm HmacSHA1;
+        static const MacAlgorithm HmacSHA224;
+        static const MacAlgorithm HmacSHA256;
+        static const MacAlgorithm HmacSHA384;
+        static const MacAlgorithm HmacSHA512;
 
         MacAlgorithm(uint32_t algo_id, const char *name);
 

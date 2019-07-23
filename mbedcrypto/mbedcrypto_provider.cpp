@@ -135,11 +135,11 @@ namespace jcp {
 		mbedcrypto::MbedcryptoMessageDigestFactory* sha512Factory = new mbedcrypto::MbedcryptoMessageDigestFactory(MBEDTLS_MD_SHA512);
         addMessageDigestAlgorithm(&MessageDigestAlgorithm::SHA_512, std::unique_ptr<mbedcrypto::MbedcryptoMessageDigestFactory>(sha512Factory));
 
-        addMacAlgorithm(&MacAlgorithm::HmacWithSHA1, std::unique_ptr<mbedcrypto::MbedcryptoMacFactory>(new mbedcrypto::MbedcryptoMacFactory(MBEDTLS_MD_SHA1)));
-        addMacAlgorithm(&MacAlgorithm::HmacWithSHA224, std::unique_ptr<mbedcrypto::MbedcryptoMacFactory>(new mbedcrypto::MbedcryptoMacFactory(MBEDTLS_MD_SHA224)));
-        addMacAlgorithm(&MacAlgorithm::HmacWithSHA256, std::unique_ptr<mbedcrypto::MbedcryptoMacFactory>(new mbedcrypto::MbedcryptoMacFactory(MBEDTLS_MD_SHA256)));
-        addMacAlgorithm(&MacAlgorithm::HmacWithSHA384, std::unique_ptr<mbedcrypto::MbedcryptoMacFactory>(new mbedcrypto::MbedcryptoMacFactory(MBEDTLS_MD_SHA384)));
-        addMacAlgorithm(&MacAlgorithm::HmacWithSHA512, std::unique_ptr<mbedcrypto::MbedcryptoMacFactory>(new mbedcrypto::MbedcryptoMacFactory(MBEDTLS_MD_SHA512)));
+        addMacAlgorithm(&MacAlgorithm::HmacSHA1, std::unique_ptr<mbedcrypto::MbedcryptoMacFactory>(new mbedcrypto::MbedcryptoMacFactory(MBEDTLS_MD_SHA1)));
+        addMacAlgorithm(&MacAlgorithm::HmacSHA224, std::unique_ptr<mbedcrypto::MbedcryptoMacFactory>(new mbedcrypto::MbedcryptoMacFactory(MBEDTLS_MD_SHA224)));
+        addMacAlgorithm(&MacAlgorithm::HmacSHA256, std::unique_ptr<mbedcrypto::MbedcryptoMacFactory>(new mbedcrypto::MbedcryptoMacFactory(MBEDTLS_MD_SHA256)));
+        addMacAlgorithm(&MacAlgorithm::HmacSHA384, std::unique_ptr<mbedcrypto::MbedcryptoMacFactory>(new mbedcrypto::MbedcryptoMacFactory(MBEDTLS_MD_SHA384)));
+        addMacAlgorithm(&MacAlgorithm::HmacSHA512, std::unique_ptr<mbedcrypto::MbedcryptoMacFactory>(new mbedcrypto::MbedcryptoMacFactory(MBEDTLS_MD_SHA512)));
 
 		addKeyAgreementAlgorithm(&KeyAgreementAlgorithm::ECDH, std::unique_ptr<mbedcrypto::MbedcryptoKaEcdhFactory>(new mbedcrypto::MbedcryptoKaEcdhFactory()));
 
