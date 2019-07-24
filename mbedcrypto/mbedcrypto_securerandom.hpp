@@ -23,7 +23,7 @@ namespace jcp {
 
         class MbedcryptoSecureRandomFactory : public SecureRandomFactory {
         public:
-			MbedcryptoSecureRandomFactory() {}
+			MbedcryptoSecureRandomFactory(Provider *provider) : SecureRandomFactory(provider) {}
             std::unique_ptr<SecureRandom> create() override;
         };
 

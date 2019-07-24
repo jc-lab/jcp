@@ -13,6 +13,8 @@
 #include "mac_algo.hpp"
 #include "key_agreement_algo.hpp"
 #include "signature_algo.hpp"
+#include "secret_key_factory.hpp"
+#include "secret_key_factory_algo.hpp"
 
 namespace jcp {
 
@@ -56,6 +58,14 @@ namespace jcp {
     void Provider::addSignatureAlgorithm(uint32_t algo_id, const char *name, std::unique_ptr<SignatureFactory> factory)
     {
         sign_algos_.emplace((void*)algo_id, AlgorithmItem<SignatureFactory>(algo_id, name, factory));
+    }
+    void Provider::addSecretKeyFactoryAlgorithm(const SecretKeyFactoryAlgorithm *algorithm, std::unique_ptr<SecretKeyFactory> factory)
+    {
+        skf_algos_.emplace((void*)algorithm, AlgorithmItem<SecretKeyFactory>(algorithm, factory));
+    }
+    void Provider::addSecretKeyFactoryAlgorithm(uint32_t algo_id, const char *name, std::unique_ptr<SecretKeyFactory> factory)
+    {
+        skf_algos_.emplace((void*)algo_id, AlgorithmItem<SecretKeyFactory>(algo_id, name, factory));
     }
     void Provider::setSecureRandomFactory(std::unique_ptr<jcp::SecureRandomFactory> factory)
     {
@@ -161,6 +171,23 @@ namespace jcp {
 
     SignatureFactory *Provider::getSignature(const char *name) {
         for(std::map<void*, AlgorithmItem<SignatureFactory> >::const_iterator iter = sign_algos_.cbegin(); iter != sign_algos_.cend(); iter++) {
+            if(compareText(iter->second.name().c_str(), name)) {
+                return iter->second.factory.get();
+            }
+        }
+        return NULL;
+    }
+
+    SecretKeyFactory *Provider::getSecretKeyFactory(uint32_t algo_id) {
+        for (std::map<void*, AlgorithmItem<SecretKeyFactory> >::const_iterator iter = skf_algos_.cbegin(); iter != skf_algos_.cend(); iter++) {
+            if (iter->second.algo_id() == algo_id) {
+                return iter->second.factory.get();
+            }
+        }
+        return NULL;
+    }
+    SecretKeyFactory *Provider::getSecretKeyFactory(const char *name) {
+        for(std::map<void*, AlgorithmItem<SecretKeyFactory> >::const_iterator iter = skf_algos_.cbegin(); iter != skf_algos_.cend(); iter++) {
             if(compareText(iter->second.name().c_str(), name)) {
                 return iter->second.factory.get();
             }

@@ -24,6 +24,7 @@ namespace jcp {
     class MacFactory;
 	class KeyAgreementFactory;
 	class SignatureFactory;
+	class SecretKeyFactory;
 	class SecureRandomFactory;
 
     class Security {
@@ -46,8 +47,10 @@ namespace jcp {
 		MacFactory* findMacImpl(const char* name) const;
 		KeyAgreementFactory* findKeyAgreementImpl(uint32_t algo_id) const;
 		KeyAgreementFactory* findKeyAgreementImpl(const char* name) const;
-		SignatureFactory* findSignatureImpl(uint32_t algo_id) const;
-		SignatureFactory* findSignatureImpl(const char* name) const;
+        SignatureFactory* findSignatureImpl(uint32_t algo_id) const;
+        SignatureFactory* findSignatureImpl(const char* name) const;
+        SecretKeyFactory* findSecretKeyFactoryImpl(uint32_t algo_id) const;
+        SecretKeyFactory* findSecretKeyFactoryImpl(const char* name) const;
         SecureRandomFactory *findSecureRandomImpl() const;
 
     public:
@@ -61,8 +64,10 @@ namespace jcp {
 		static MacFactory* findMac(const char* name);
 		static KeyAgreementFactory* findKeyAgreement(uint32_t algo_id);
 		static KeyAgreementFactory* findKeyAgreement(const char* name);
-		static SignatureFactory* findSignature(uint32_t algo_id);
-		static SignatureFactory* findSignature(const char* name);
+        static SignatureFactory* findSignature(uint32_t algo_id);
+        static SignatureFactory* findSignature(const char* name);
+        static SecretKeyFactory* findSecretKeyFactory(uint32_t algo_id);
+        static SecretKeyFactory* findSecretKeyFactory(const char* name);
 		static SecureRandomFactory *findSecureRandom();
     };
 

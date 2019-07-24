@@ -37,8 +37,8 @@ namespace jcp {
             SecureRandom *secure_random_;
 
         public:
-            MbedcryptoSign(mbedtls_pk_type_t pk_type, mbedtls_md_type_t md_type, MbedcryptoMessageDigestFactory* md_factory)
-                : pk_type_(pk_type), md_type_(md_type), md_factory_(md_factory)
+            MbedcryptoSign(Provider *provider, mbedtls_pk_type_t pk_type, mbedtls_md_type_t md_type, MbedcryptoMessageDigestFactory* md_factory)
+                : Signature(provider), pk_type_(pk_type), md_type_(md_type), md_factory_(md_factory)
             {
             }
 
@@ -81,9 +81,9 @@ namespace jcp {
                 return initCommon(key, secure_random);
             }
 
-            std::unique_ptr<Result<void>> initVerify(AsymKey *key, SecureRandom *secure_random) override {
+            std::unique_ptr<Result<void>> initVerify(AsymKey *key) override {
                 verify_mode_ = true;
-                return initCommon(key, secure_random);
+                return initCommon(key, NULL);
             }
 
             std::unique_ptr<Result<void>> update(const void *buf, size_t length) override {
@@ -131,7 +131,7 @@ namespace jcp {
         };
 
         std::unique_ptr<Signature> MbedcryptoSignFactory::create() {
-            return std::unique_ptr<Signature>(new MbedcryptoSign(pk_type_, md_type_, md_factory_));
+            return std::unique_ptr<Signature>(new MbedcryptoSign(provider_, pk_type_, md_type_, md_factory_));
         }
     } // namespace mbedcrypto
 

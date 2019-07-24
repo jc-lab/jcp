@@ -35,7 +35,7 @@ namespace jcp {
             std::vector<unsigned char> shared_secret_;
 
         public:
-            MbedcryptoKaEcdh() : secure_random_(NULL) {
+            MbedcryptoKaEcdh(Provider *provider) : KeyAgreement(provider), secure_random_(NULL) {
                 mbedtls_ecdh_init(&ctx_priv_);
                 mbedtls_ecdh_init(&ctx_pub_);
             }
@@ -90,7 +90,7 @@ namespace jcp {
         };
 
         std::unique_ptr<KeyAgreement> MbedcryptoKaEcdhFactory::create() {
-            return std::unique_ptr<KeyAgreement>(new MbedcryptoKaEcdh());
+            return std::unique_ptr<KeyAgreement>(new MbedcryptoKaEcdh(provider_));
         }
 
     } // namespace mbedcrypto

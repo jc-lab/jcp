@@ -20,7 +20,8 @@ namespace jcp {
             mbedtls_ctr_drbg_context ctr_drbg_;
 
         public:
-            MbedcryptoSecureRandom()
+            MbedcryptoSecureRandom(Provider *provider)
+                : SecureRandom(provider)
             {
                 int rc;
                 mbedtls_entropy_context entropy;
@@ -40,7 +41,7 @@ namespace jcp {
         };
 
         std::unique_ptr<SecureRandom> mbedcrypto::MbedcryptoSecureRandomFactory::create() {
-            return std::unique_ptr<SecureRandom>(new MbedcryptoSecureRandom());
+            return std::unique_ptr<SecureRandom>(new MbedcryptoSecureRandom(provider_));
         }
     } // namespace mbedcrypto
 

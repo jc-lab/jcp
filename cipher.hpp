@@ -26,6 +26,9 @@ namespace jcp {
 	class SecureRandom;
 
     class Cipher {
+    protected:
+        Provider *provider_;
+
     public:
 		enum Mode {
 			ENCRYPT_MODE = 1,
@@ -34,6 +37,9 @@ namespace jcp {
 
         static std::unique_ptr<Cipher> getInstance(const char *name, std::shared_ptr<Provider> provider = NULL);
         static std::unique_ptr<Cipher> getInstance(uint32_t algo_id, std::shared_ptr<Provider> provider = NULL);
+
+        Cipher(Provider *provider) : provider_(provider) {}
+        Provider *getProvider() const { return provider_; }
 
         /**
          *
@@ -56,12 +62,33 @@ namespace jcp {
         virtual std::unique_ptr< Result<void> > updateAAD(const void *auth, size_t length) = 0;
         virtual std::unique_ptr< Result<Buffer> > update(const void *buf, size_t length) = 0;
         virtual std::unique_ptr< Result<Buffer> > doFinal() = 0;
+        std::unique_ptr< Result<Buffer> > doFinal(const void *buf, size_t length) {
+            std::unique_ptr< Result<Buffer> > update_result = update(buf, length);
+            if(update_result->exception())
+                return std::move(update_result);
+
+            std::unique_ptr< Result<Buffer> > final_result = doFinal(buf, length);
+            if(update_result->exception())
+                return std::move(update_result);
+
+            std::unique_ptr< NoExceptionResult<Buffer> > result_with_buf(new NoExceptionResult<Buffer>(update_result->result().size() + final_result->result().size()));
+            unsigned char *poutbuf = result_with_buf->result()->buffer();
+            memcpy(poutbuf, update_result->result().data(), update_result->result().size());
+            poutbuf += update_result->result().size();
+            memcpy(poutbuf, final_result->result().data(), final_result->result().size());
+            return std::move(result_with_buf);
+        }
 
         virtual std::unique_ptr<Buffer> getIv() = 0;
     };
 
     class CipherFactory {
+    protected:
+        Provider *provider_;
+
     public:
+        CipherFactory(Provider *provider) : provider_(provider) {}
+
         virtual std::unique_ptr<Cipher> create() = 0;
     };
 

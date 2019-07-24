@@ -139,6 +139,25 @@ namespace jcp {
 		return factory;
 	}
 
+    SecretKeyFactory* Security::findSecretKeyFactoryImpl(uint32_t algo_id) const {
+        SecretKeyFactory* factory = NULL;
+        for (std::list< std::shared_ptr<Provider> >::const_iterator iter = providers_.cbegin(); (!factory) && (iter != providers_.cend()); iter++) {
+            factory = (*iter)->getSecretKeyFactory(algo_id);
+            if(factory)
+                break;
+        }
+        return factory;
+    }
+    SecretKeyFactory* Security::findSecretKeyFactoryImpl(const char* name) const {
+        SecretKeyFactory* factory = NULL;
+        for (std::list< std::shared_ptr<Provider> >::const_iterator iter = providers_.cbegin(); (!factory) && (iter != providers_.cend()); iter++) {
+            factory = (*iter)->getSecretKeyFactory(name);
+            if(factory)
+                break;
+        }
+        return factory;
+    }
+
     SecureRandomFactory *Security::findSecureRandomImpl() const {
         SecureRandomFactory* factory = NULL;
         for (std::list< std::shared_ptr<Provider> >::const_iterator iter = providers_.cbegin(); (!factory) && (iter != providers_.cend()); iter++) {
@@ -188,6 +207,13 @@ namespace jcp {
 	SignatureFactory* Security::findSignature(const char* name) {
 		return instance_.findSignatureImpl(name);
 	}
+
+    SecretKeyFactory* Security::findSecretKeyFactory(uint32_t algo_id) {
+        return instance_.findSecretKeyFactoryImpl(algo_id);
+    }
+    SecretKeyFactory* Security::findSecretKeyFactory(const char* name) {
+        return instance_.findSecretKeyFactoryImpl(name);
+    }
 
     SecureRandomFactory *Security::findSecureRandom() {
         return instance_.findSecureRandomImpl();

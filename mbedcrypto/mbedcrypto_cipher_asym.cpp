@@ -38,7 +38,7 @@ namespace jcp {
             SecureRandom *secure_random_;
 
         public:
-            MbedcryptoAsymCipher(mbedtls_pk_type_t pk_type, int padding_type) : pk_type_(pk_type), padding_type_(padding_type), secure_random_(NULL) {
+            MbedcryptoAsymCipher(Provider *provider, mbedtls_pk_type_t pk_type, int padding_type) : Cipher(provider), pk_type_(pk_type), padding_type_(padding_type), secure_random_(NULL) {
                 memset(&pk_, 0, sizeof(pk_));
             }
 
@@ -120,7 +120,7 @@ namespace jcp {
         };
 
         std::unique_ptr<Cipher> MbedcryptoAsymCipherFactory::create() {
-			return std::unique_ptr<Cipher>(new MbedcryptoAsymCipher(pk_type_, padding_type_));
+			return std::unique_ptr<Cipher>(new MbedcryptoAsymCipher(provider_, pk_type_, padding_type_));
         }
 
     } // namespace mbedcrypto

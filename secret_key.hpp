@@ -38,6 +38,10 @@ namespace jcp {
             return std::unique_ptr<SecretKey>(new SecretKey(key, len));
         }
 
+		const std::vector<unsigned char>& getEncoded() const {
+			return plain_key_;
+		}
+
     };
 
 }

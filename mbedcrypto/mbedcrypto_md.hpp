@@ -25,7 +25,7 @@ namespace jcp {
         private:
             mbedtls_md_type_t type_;
         public:
-            MbedcryptoMessageDigestFactory(mbedtls_md_type_t type) : type_(type) {}
+            MbedcryptoMessageDigestFactory(Provider *provider, mbedtls_md_type_t type) : MessageDigestFactory(provider), type_(type) {}
             std::unique_ptr<MessageDigest> create() override;
         };
 
@@ -33,7 +33,7 @@ namespace jcp {
         private:
             mbedtls_md_type_t type_;
         public:
-            MbedcryptoMacFactory(mbedtls_md_type_t type) : type_(type) {}
+            MbedcryptoMacFactory(Provider *provider, mbedtls_md_type_t type) : MacFactory(provider), type_(type) {}
             std::unique_ptr<Mac> create() override;
         };
 

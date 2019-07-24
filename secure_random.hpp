@@ -17,12 +17,23 @@
 namespace jcp {
 
     class SecureRandom : public Random {
+    protected:
+        Provider *provider_;
+
     public:
         static std::unique_ptr<SecureRandom> getInstance(Provider *provider = NULL);
+
+        SecureRandom(Provider *provider) : provider_(provider) {}
+        Provider *getProvider() const { return provider_; }
     };
 
     class SecureRandomFactory {
+    protected:
+        Provider *provider_;
+
     public:
+        SecureRandomFactory(Provider *provider) : provider_(provider) {}
+
         virtual std::unique_ptr<SecureRandom> create() = 0;
     };
 

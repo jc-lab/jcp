@@ -29,7 +29,7 @@ namespace jcp {
 			mbedtls_md_type_t md_type_;
 			MbedcryptoMessageDigestFactory* md_factory_;
         public:
-            MbedcryptoSignFactory(mbedtls_pk_type_t pk_type, mbedtls_md_type_t md_type, MbedcryptoMessageDigestFactory* md_factory) : pk_type_(pk_type), md_type_(md_type), md_factory_(md_factory) {}
+            MbedcryptoSignFactory(Provider *provider, mbedtls_pk_type_t pk_type, mbedtls_md_type_t md_type, MbedcryptoMessageDigestFactory* md_factory) : SignatureFactory(provider), pk_type_(pk_type), md_type_(md_type), md_factory_(md_factory) {}
             std::unique_ptr<Signature> create() override;
         };
 

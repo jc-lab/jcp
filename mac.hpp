@@ -18,19 +18,42 @@ namespace jcp {
 
 	class Provider;
     class Mac {
+    protected:
+        Provider *provider_;
+
     public:
         static std::unique_ptr<Mac> getInstance(const char *name, std::shared_ptr<Provider> provider = NULL);
         static std::unique_ptr<Mac> getInstance(uint32_t algo_id, std::shared_ptr<Provider> provider = NULL);
 
+        Mac(Provider *provider) : provider_(provider) {}
+        Provider *getProvider() const { return provider_; }
+
         virtual void init(SecretKey *key) = 0;
-        virtual int digest_size() = 0;
+        virtual int digest_size() const = 0;
         virtual std::unique_ptr< Result<void> > update(const void *buf, size_t length) = 0;
         virtual std::unique_ptr< Result<void> > digest(unsigned char *buf) = 0;
         virtual std::unique_ptr< Result<Buffer> > digest() = 0;
+
+        virtual void reset() = 0;
+
+        int getMacLength() const {
+            return digest_size();
+        }
+
+        virtual std::unique_ptr< Result<Buffer> > doFinal() {
+            std::unique_ptr< Result<Buffer> > result = digest();
+            reset();
+            return std::move(result);
+        }
     };
 
     class MacFactory {
+    protected:
+        Provider *provider_;
+
     public:
+        MacFactory(Provider *provider) : provider_(provider) {}
+
         virtual std::unique_ptr<Mac> create() = 0;
     };
 

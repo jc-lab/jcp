@@ -23,12 +23,18 @@ namespace jcp {
 	class SecureRandom;
 
     class Signature {
+    protected:
+        Provider *provider_;
+
     public:
         static std::unique_ptr<Signature> getInstance(const char *name, std::shared_ptr<Provider> provider = NULL);
         static std::unique_ptr<Signature> getInstance(uint32_t algo_id, std::shared_ptr<Provider> provider = NULL);
 
+        Signature(Provider *provider) : provider_(provider) {}
+        Provider *getProvider() const { return provider_; }
+
         virtual std::unique_ptr< Result<void> > initSign(AsymKey *key, SecureRandom *secure_random = NULL) = 0;
-        virtual std::unique_ptr< Result<void> > initVerify(AsymKey *key, SecureRandom *secure_random = NULL) = 0;
+        virtual std::unique_ptr< Result<void> > initVerify(AsymKey *key) = 0;
 
         virtual std::unique_ptr< Result<void> > update(const void *buf, size_t length) = 0;
 
@@ -37,7 +43,12 @@ namespace jcp {
     };
 
     class SignatureFactory {
+    protected:
+        Provider *provider_;
+
     public:
+        SignatureFactory(Provider *provider) : provider_(provider) {}
+
         virtual std::unique_ptr<Signature> create() = 0;
     };
 

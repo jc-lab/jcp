@@ -26,7 +26,7 @@ namespace jcp {
 			int padding_type_;
 
         public:
-			MbedcryptoAsymCipherFactory(mbedtls_pk_type_t pk_type, int padding_type) : pk_type_(pk_type), padding_type_(padding_type) {}
+			MbedcryptoAsymCipherFactory(Provider *provider, mbedtls_pk_type_t pk_type, int padding_type) : CipherFactory(provider), pk_type_(pk_type), padding_type_(padding_type) {}
             std::unique_ptr<Cipher> create() override;
         };
 

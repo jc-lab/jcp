@@ -21,9 +21,15 @@ namespace jcp {
 
 	class Provider;
     class KeyAgreement {
+    protected:
+        Provider *provider_;
+
     public:
         static std::unique_ptr<KeyAgreement> getInstance(const char *name, std::shared_ptr<Provider> provider = NULL);
         static std::unique_ptr<KeyAgreement> getInstance(uint32_t algo_id, std::shared_ptr<Provider> provider = NULL);
+
+        KeyAgreement(Provider *provider) : provider_(provider) {}
+        Provider *getProvider() const { return provider_; }
 
         virtual std::unique_ptr<Result<void>> init(AsymKey *key, SecureRandom *secure_random = NULL) = 0;
         virtual std::unique_ptr<Result<SecretKey>> doPhase(AsymKey *key, SecureRandom *secure_random = NULL) = 0;
@@ -31,7 +37,12 @@ namespace jcp {
     };
 
     class KeyAgreementFactory {
+    protected:
+        Provider *provider_;
+
     public:
+        KeyAgreementFactory(Provider *provider) : provider_(provider) {}
+
         virtual std::unique_ptr<KeyAgreement> create() = 0;
     };
 

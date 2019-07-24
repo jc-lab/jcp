@@ -26,7 +26,7 @@ namespace jcp {
             int padding_type_;
 
         public:
-            MbedcryptoKaEcdhFactory() {}
+            MbedcryptoKaEcdhFactory(Provider *provider) : KeyAgreementFactory(provider){}
             std::unique_ptr<KeyAgreement> create() override;
         };
 

@@ -23,6 +23,7 @@
 #include "mac.hpp"
 #include "key_agreement.hpp"
 #include "signature.hpp"
+#include "secret_key_factory.hpp"
 #include "secure_random.hpp"
 
 namespace jcp {
@@ -34,6 +35,7 @@ namespace jcp {
     class MacFactory;
     class KeyAgreementFactory;
     class SignatureFactory;
+    class SecretKeyFactory;
     class SecureRandomFactory;
 
     class CipherAlgorithm;
@@ -41,6 +43,7 @@ namespace jcp {
     class MacAlgorithm;
     class KeyAgreementAlgorithm;
     class SignatureAlgorithm;
+    class SecretKeyFactoryAlgorithm;
 
     class Provider {
     private:
@@ -79,6 +82,7 @@ namespace jcp {
         std::map<void*, AlgorithmItem<MacFactory> > mac_algos_;
         std::map<void*, AlgorithmItem<KeyAgreementFactory> > ka_algos_;
         std::map<void*, AlgorithmItem<SignatureFactory> > sign_algos_;
+        std::map<void*, AlgorithmItem<SecretKeyFactory> > skf_algos_;
         std::unique_ptr<SecureRandomFactory> secure_random_fac_;
 
     protected:
@@ -92,6 +96,8 @@ namespace jcp {
         void addKeyAgreementAlgorithm(uint32_t algo_id, const char *name, std::unique_ptr<KeyAgreementFactory> factory);
         void addSignatureAlgorithm(const SignatureAlgorithm *algorithm, std::unique_ptr<SignatureFactory> factory);
         void addSignatureAlgorithm(uint32_t algo_id, const char *name, std::unique_ptr<SignatureFactory> factory);
+        void addSecretKeyFactoryAlgorithm(const SecretKeyFactoryAlgorithm *algorithm, std::unique_ptr<SecretKeyFactory> factory);
+        void addSecretKeyFactoryAlgorithm(uint32_t algo_id, const char *name, std::unique_ptr<SecretKeyFactory> factory);
         void setSecureRandomFactory(std::unique_ptr<SecureRandomFactory> factory);
 
     public:
@@ -105,6 +111,8 @@ namespace jcp {
         KeyAgreementFactory *getKeyAgreement(const char *name);
         SignatureFactory *getSignature(uint32_t algo_id);
         SignatureFactory *getSignature(const char *name);
+        SecretKeyFactory *getSecretKeyFactory(uint32_t algo_id);
+        SecretKeyFactory *getSecretKeyFactory(const char *name);
         SecureRandomFactory *getSecureRandom();
     };
 

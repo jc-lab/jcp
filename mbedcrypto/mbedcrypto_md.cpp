@@ -22,8 +22,8 @@ namespace jcp {
             mbedtls_md_type_t md_type_;
 
         public:
-            MbedcryptoMessageDigest(mbedtls_md_type_t md_type)
-                    : md_type_(md_type)
+            MbedcryptoMessageDigest(Provider *provider, mbedtls_md_type_t md_type)
+                    : MessageDigest(provider), md_type_(md_type)
             {
                 mbedtls_md_init(&ctx_);
                 mbedtls_md_setup(&ctx_, mbedtls_md_info_from_type(md_type), 0);
@@ -61,8 +61,8 @@ namespace jcp {
             mbedtls_md_type_t md_type_;
 
         public:
-            MbedcryptoMac(mbedtls_md_type_t md_type)
-                    : md_type_(md_type)
+            MbedcryptoMac(Provider *provider, mbedtls_md_type_t md_type)
+                    : Mac(provider), md_type_(md_type)
             {
                 mbedtls_md_init(&ctx_);
                 mbedtls_md_setup(&ctx_, mbedtls_md_info_from_type(md_type), 1);
@@ -78,7 +78,7 @@ namespace jcp {
                 mbedtls_md_hmac_starts(&ctx_, &plain_key[0], plain_key.size());
             }
 
-            int digest_size() override {
+            int digest_size() const override {
                 return mbedtls_md_get_size(mbedtls_md_info_from_type(md_type_));
             }
 
@@ -98,14 +98,18 @@ namespace jcp {
                 return std::move(result);
             }
 
+            void reset() override {
+                mbedtls_md_hmac_reset(&ctx_);
+            }
+
         };
 
         std::unique_ptr<MessageDigest> MbedcryptoMessageDigestFactory::create() {
-            return std::unique_ptr<MbedcryptoMessageDigest>(new MbedcryptoMessageDigest(type_));
+            return std::unique_ptr<MbedcryptoMessageDigest>(new MbedcryptoMessageDigest(provider_, type_));
         }
 
         std::unique_ptr<Mac> MbedcryptoMacFactory::create() {
-            return std::unique_ptr<MbedcryptoMac>(new MbedcryptoMac(type_));
+            return std::unique_ptr<MbedcryptoMac>(new MbedcryptoMac(provider_, type_));
         }
 
 
