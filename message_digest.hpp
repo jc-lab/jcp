@@ -7,8 +7,8 @@
  *            of the Apache License 2.0.  See the LICENSE file for details.
  */
 
-#ifndef __JCP_MESSAGE_DIGEST_ALGO_H__
-#define __JCP_MESSAGE_DIGEST_ALGO_H__
+#ifndef __JCP_MESSAGE_DIGEST_H__
+#define __JCP_MESSAGE_DIGEST_H__
 
 #include <memory>
 #include <vector>
