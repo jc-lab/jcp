@@ -27,9 +27,9 @@ namespace jcp {
 			std::map<int, mbedtls_cipher_type_t> cipher_types_with_keysize_;
 
         public:
-			MbedcryptoSymCipherFactory(mbedtls_cipher_type_t cipher_type) : cipher_type_(cipher_type) {}
+			MbedcryptoSymCipherFactory(Provider *provider, mbedtls_cipher_type_t cipher_type) : CipherFactory(provider), cipher_type_(cipher_type) {}
 
-			MbedcryptoSymCipherFactory(bool dummy, const std::initializer_list< std::pair<const int, mbedtls_cipher_type_t> > &arg) : cipher_type_(MBEDTLS_CIPHER_NONE), cipher_types_with_keysize_(arg) {}
+			MbedcryptoSymCipherFactory(Provider *provider, bool dummy, const std::initializer_list< std::pair<const int, mbedtls_cipher_type_t> > &arg) : CipherFactory(provider), cipher_type_(MBEDTLS_CIPHER_NONE), cipher_types_with_keysize_(arg) {}
 
             std::unique_ptr<Cipher> create() override;
         };

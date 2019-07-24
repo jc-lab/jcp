@@ -17,7 +17,7 @@
 
 namespace jcp {
 
-    class GcmParameterSpec : public AlgorithmParameterSpec
+    class GCMParameterSpec : public AlgorithmParameterSpec
     {
     private:
         /**
@@ -26,7 +26,7 @@ namespace jcp {
         int t_len_;
         std::vector<uint8_t> iv_;
 
-        GcmParameterSpec(int t_len, const uint8_t *iv, int iv_len)
+        GCMParameterSpec(int t_len, const uint8_t *iv, int iv_len)
             : t_len_(t_len), iv_(&iv[0], &iv[iv_len])
         {}
 
@@ -38,8 +38,8 @@ namespace jcp {
          * @param iv_len
          * @return
          */
-        static std::unique_ptr<GcmParameterSpec> create(int t_len, const uint8_t *iv, int iv_len) {
-            return std::unique_ptr<GcmParameterSpec>(new GcmParameterSpec(t_len, iv, iv_len));
+        static std::unique_ptr<GCMParameterSpec> create(int t_len, const uint8_t *iv, int iv_len) {
+            return std::unique_ptr<GCMParameterSpec>(new GCMParameterSpec(t_len, iv, iv_len));
         }
 
         int get_t_len() const {
