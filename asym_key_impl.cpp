@@ -329,7 +329,7 @@ namespace jcp {
                 return mbedtls_rsa_get_len(mbed_rsa_.get()) * 8;
             case KEY_EC_PRIVATE:
             case KEY_EC_PUBLIC:
-                return mbed_ec_->grp.nbits ? mbed_ec_->grp.nbits : mbed_ec_->grp.pbits;
+                return mbed_ec_->grp.pbits;
         }
         return -1;
     }
