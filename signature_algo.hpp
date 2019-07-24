@@ -32,11 +32,18 @@ namespace jcp {
         std::string name_;
 
     public:
-        static const SignatureAlgorithm SHA1withECDSA;
-        static const SignatureAlgorithm SHA224withECDSA;
-        static const SignatureAlgorithm SHA256withECDSA;
-        static const SignatureAlgorithm SHA384withECDSA;
-        static const SignatureAlgorithm SHA512withECDSA;
+		static const SignatureAlgorithm NONEwithECDSA;
+		static const SignatureAlgorithm SHA1withECDSA;
+		static const SignatureAlgorithm SHA224withECDSA;
+		static const SignatureAlgorithm SHA256withECDSA;
+		static const SignatureAlgorithm SHA384withECDSA;
+		static const SignatureAlgorithm SHA512withECDSA;
+		static const SignatureAlgorithm NONEwithRSA;
+		static const SignatureAlgorithm SHA1withRSA;
+		static const SignatureAlgorithm SHA224withRSA;
+		static const SignatureAlgorithm SHA256withRSA;
+		static const SignatureAlgorithm SHA384withRSA;
+		static const SignatureAlgorithm SHA512withRSA;
 
         SignatureAlgorithm(uint32_t algo_id, const char *name);
 

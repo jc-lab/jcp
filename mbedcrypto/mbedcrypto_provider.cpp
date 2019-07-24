@@ -150,11 +150,19 @@ namespace jcp {
 
 		addKeyAgreementAlgorithm(&KeyAgreementAlgorithm::ECDH, std::unique_ptr<mbedcrypto::MbedcryptoKaEcdhFactory>(new mbedcrypto::MbedcryptoKaEcdhFactory(this)));
 
+        addSignatureAlgorithm(&SignatureAlgorithm::NONEwithECDSA, std::unique_ptr<mbedcrypto::MbedcryptoSignFactory>(new mbedcrypto::MbedcryptoSignFactory(this, MBEDTLS_PK_ECDSA, MBEDTLS_MD_NONE, NULL)));
         addSignatureAlgorithm(&SignatureAlgorithm::SHA1withECDSA, std::unique_ptr<mbedcrypto::MbedcryptoSignFactory>(new mbedcrypto::MbedcryptoSignFactory(this, MBEDTLS_PK_ECDSA, MBEDTLS_MD_SHA1, sha1Factory)));
         addSignatureAlgorithm(&SignatureAlgorithm::SHA224withECDSA, std::unique_ptr<mbedcrypto::MbedcryptoSignFactory>(new mbedcrypto::MbedcryptoSignFactory(this, MBEDTLS_PK_ECDSA, MBEDTLS_MD_SHA224, sha224Factory)));
         addSignatureAlgorithm(&SignatureAlgorithm::SHA256withECDSA, std::unique_ptr<mbedcrypto::MbedcryptoSignFactory>(new mbedcrypto::MbedcryptoSignFactory(this, MBEDTLS_PK_ECDSA, MBEDTLS_MD_SHA256, sha256Factory)));
         addSignatureAlgorithm(&SignatureAlgorithm::SHA384withECDSA, std::unique_ptr<mbedcrypto::MbedcryptoSignFactory>(new mbedcrypto::MbedcryptoSignFactory(this, MBEDTLS_PK_ECDSA, MBEDTLS_MD_SHA384, sha384Factory)));
         addSignatureAlgorithm(&SignatureAlgorithm::SHA512withECDSA, std::unique_ptr<mbedcrypto::MbedcryptoSignFactory>(new mbedcrypto::MbedcryptoSignFactory(this, MBEDTLS_PK_ECDSA, MBEDTLS_MD_SHA512, sha512Factory)));
+
+		addSignatureAlgorithm(&SignatureAlgorithm::NONEwithRSA, std::unique_ptr<mbedcrypto::MbedcryptoSignFactory>(new mbedcrypto::MbedcryptoSignFactory(this, MBEDTLS_PK_RSA, MBEDTLS_MD_NONE, NULL)));
+		addSignatureAlgorithm(&SignatureAlgorithm::SHA1withECDSA, std::unique_ptr<mbedcrypto::MbedcryptoSignFactory>(new mbedcrypto::MbedcryptoSignFactory(this, MBEDTLS_PK_RSA, MBEDTLS_MD_SHA1, sha1Factory)));
+		addSignatureAlgorithm(&SignatureAlgorithm::SHA224withECDSA, std::unique_ptr<mbedcrypto::MbedcryptoSignFactory>(new mbedcrypto::MbedcryptoSignFactory(this, MBEDTLS_PK_RSA, MBEDTLS_MD_SHA224, sha224Factory)));
+		addSignatureAlgorithm(&SignatureAlgorithm::SHA256withECDSA, std::unique_ptr<mbedcrypto::MbedcryptoSignFactory>(new mbedcrypto::MbedcryptoSignFactory(this, MBEDTLS_PK_RSA, MBEDTLS_MD_SHA256, sha256Factory)));
+		addSignatureAlgorithm(&SignatureAlgorithm::SHA384withECDSA, std::unique_ptr<mbedcrypto::MbedcryptoSignFactory>(new mbedcrypto::MbedcryptoSignFactory(this, MBEDTLS_PK_RSA, MBEDTLS_MD_SHA384, sha384Factory)));
+		addSignatureAlgorithm(&SignatureAlgorithm::SHA512withECDSA, std::unique_ptr<mbedcrypto::MbedcryptoSignFactory>(new mbedcrypto::MbedcryptoSignFactory(this, MBEDTLS_PK_RSA, MBEDTLS_MD_SHA512, sha512Factory)));
 
         addSecretKeyFactoryAlgorithm(&SecretKeyFactoryAlgorithm::PBKDF2WithHmacSHA1, std::unique_ptr<mbedcrypto::MbedcryptoPBKDF2SecretKeyFactory>(new mbedcrypto::MbedcryptoPBKDF2SecretKeyFactory(this, hmacSha1Factory)));
         addSecretKeyFactoryAlgorithm(&SecretKeyFactoryAlgorithm::PBKDF2WithHmacSHA224, std::unique_ptr<mbedcrypto::MbedcryptoPBKDF2SecretKeyFactory>(new mbedcrypto::MbedcryptoPBKDF2SecretKeyFactory(this, hmacSha224Factory)));
