@@ -20,9 +20,15 @@ namespace jcp {
 
     class Provider;
     class MessageDigest {
+    protected:
+        Provider *provider_;
+
     public:
         static std::unique_ptr<MessageDigest> getInstance(const char *name, std::shared_ptr<Provider> provider = NULL);
         static std::unique_ptr<MessageDigest> getInstance(uint32_t algo_id, std::shared_ptr<Provider> provider = NULL);
+
+        MessageDigest(Provider *provider) : provider_(provider) {}
+        Provider *getProvider() const { return provider_; }
 
         virtual int digest_size() = 0;
         virtual std::unique_ptr<Result<void>> update(const void *buf, size_t length) = 0;
@@ -35,7 +41,12 @@ namespace jcp {
     };
 
     class MessageDigestFactory {
+    protected:
+        Provider *provider_;
+
     public:
+        MessageDigestFactory(Provider *provider) : provider_(provider) {}
+
         virtual std::unique_ptr<MessageDigest> create() = 0;
     };
 
