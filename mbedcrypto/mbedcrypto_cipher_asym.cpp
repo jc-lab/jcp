@@ -43,7 +43,7 @@ namespace jcp {
             }
 
             std::unique_ptr<Result<void>> init(int mode, const SecretKey *key, const AlgorithmParameterSpec *algorithmParameterSpec, SecureRandom *secure_random) override {
-                return std::unique_ptr<Result<void>>(new ExceptionResultImpl<void, exception::InvalidKeyException>());
+                return std::unique_ptr<Result<void>>(ResultBuilder<void, exception::InvalidKeyException>().withException().build());
             }
 
             std::unique_ptr<Result<void>> init(int mode, const AsymKey *key, const AlgorithmParameterSpec *algorithmParameterSpec, SecureRandom *secure_random) override {
@@ -66,7 +66,7 @@ namespace jcp {
                 rc = mbedtls_pk_setup(&pk_, pk_info);
 				if (rc)
 				{
-					return std::unique_ptr<Result<void>>(new ExceptionResultImpl<void, exception::GeneralException>());
+					return std::unique_ptr<Result<void>>(ResultBuilder<void, exception::GeneralException>().withException().build());
 				}
 				if (key->isRSAKey())
 				{
@@ -81,7 +81,7 @@ namespace jcp {
 					mbedtls_mpi_copy(&dst->d, &src->d);
 					mbedtls_ecp_copy(&dst->Q, &src->Q);
 				}
-				return std::unique_ptr<Result<void>>(new NoExceptionResult<void>());
+				return std::unique_ptr<Result<void>>(ResultBuilder<void, void>().build());
             }
 
             int getBlockSize() override {
@@ -89,13 +89,13 @@ namespace jcp {
             }
 
             std::unique_ptr<Result<void>> updateAAD(const void *auth, size_t length) override {
-                return std::unique_ptr<Result<void>>(new ExceptionResultImpl<void, exception::InvalidInputException>());
+                return std::unique_ptr<Result<void>>(ResultBuilder<void, exception::InvalidInputException>().withException().build());
             }
 
             std::unique_ptr<Result<Buffer>> update(const void *buf, size_t length) override {
                 const unsigned char *pin = (const unsigned char*)buf;
                 input_buf_.insert(input_buf_.end(), &pin[0], &pin[length]);
-                return std::unique_ptr<Result<Buffer>>(new NoExceptionResult<Buffer>());
+                return std::unique_ptr<Result<Buffer>>(ResultBuilder<Buffer, void>().build());
             }
 
             std::unique_ptr<Result<Buffer>> doFinal() override {
@@ -108,10 +108,10 @@ namespace jcp {
                     rc = mbedtls_pk_decrypt(&pk_, input_buf_.data(), input_buf_.size(), &outbuf[0], &olen, outbuf.size(), Random::random_cb, secure_random_);
                 }
                 if(rc) {
-                    return std::unique_ptr<Result<Buffer>>(new ExceptionResultImpl<Buffer, exception::InvalidInputException>("pk failed", rc));
+                    return std::unique_ptr<Result<Buffer>>(ResultBuilder<Buffer, exception::InvalidInputException>().withException("pk failed", rc).build());
                 }
 				outbuf.resize(olen);
-                return std::unique_ptr<Result<Buffer>>(new NoExceptionResult<Buffer>(outbuf));
+                return std::unique_ptr<Result<Buffer>>(ResultBuilder<Buffer, void>(outbuf).build());
             }
 
             std::unique_ptr<Buffer> getIv() override {

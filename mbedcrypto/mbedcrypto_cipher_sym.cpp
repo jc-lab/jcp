@@ -70,8 +70,9 @@ namespace jcp {
                     }
                     aead_tag_pos_ = i;
                 }else{
-			        memcpy(tag_buf_ptr, in_ptr, *plen);
-                    (*plen) -= in_len;
+					memcpy(outbuf, tag_buf_ptr, aead_tag_pos_);
+			        memcpy(tag_buf_ptr, in_ptr, aead_tag_size_);
+                    (*plen) -= aead_tag_size_;
 			        ret = aead_tag_pos_;
 					aead_tag_pos_ = aead_tag_size_;
 			    }
@@ -110,7 +111,7 @@ namespace jcp {
 					if (iter != cipher_types_with_keysize_->end()) {
 						cipher_type_ = iter->second;
 					} else {
-						return std::unique_ptr<Result<void>>(new ExceptionResultImpl<void, exception::InvalidKeyException>("Invalid key size"));
+						return std::unique_ptr<Result<void>>(ResultBuilder<void, exception::InvalidKeyException>().withException("Invalid key size").build());
 					}
 				}
 
@@ -137,11 +138,11 @@ namespace jcp {
 
                 aead_tag_buf_.resize(aead_tag_size_);
 
-                return std::unique_ptr<Result<void>>(new NoExceptionResult<void>());
+                return std::unique_ptr<Result<void>>(ResultBuilder<void, void>().build());
             }
 
             std::unique_ptr<Result<void>> init(int mode, const AsymKey *key, const AlgorithmParameterSpec *algorithmParameterSpec, SecureRandom *secure_random) override {
-                return std::unique_ptr<Result<void>>(new ExceptionResultImpl<void, exception::InvalidKeyException>());
+                return std::unique_ptr<Result<void>>(ResultBuilder<void, exception::InvalidKeyException>().withException().build());
             }
 
             int getBlockSize() override {
@@ -152,9 +153,9 @@ namespace jcp {
 			    int rc = mbedtls_cipher_update_ad(&ctx_, (const unsigned char*)auth, length);
                 if (rc)
                 {
-                    return std::unique_ptr< Result<void> >(new ExceptionResultImpl<void, exception::InvalidInputException>("Set Auth failed", rc));
+                    return std::unique_ptr< Result<void> >(ResultBuilder<void, exception::InvalidInputException>().withException("Set Auth failed").build());
                 }
-                return std::unique_ptr<Result<void>>(new NoExceptionResult<void>());
+                return std::unique_ptr<Result<void>>(ResultBuilder<void, void>().build());
             }
 
             size_t floor_block_size(size_t length) {
@@ -186,7 +187,7 @@ namespace jcp {
                 std::vector<unsigned char> cur_buf;
                 cur_buf.resize(block_buf_pos_ + prevlen + length);
                 if(!cur_buf.size()) {
-                    return std::unique_ptr<Result<Buffer>>(new NoExceptionResult<Buffer>(0));
+                    return std::unique_ptr<Result<Buffer>>(ResultBuilder<Buffer, void>(0).build());
                 }
 
                 unsigned char *cur_buf_ptr = &cur_buf[0];
@@ -197,9 +198,9 @@ namespace jcp {
                 memcpy(cur_buf_ptr, buf, length);
 
                 pinbuf = &cur_buf[0];
-                std::unique_ptr< NoExceptionResult<Buffer> > result_with_buf(new NoExceptionResult<Buffer>(floor_block_size(cur_buf.size())));
-                unsigned char *poutbuf = result_with_buf->result()->buffer();
-                size_t outbuf_remaining = result_with_buf->result()->size();
+                std::unique_ptr< ResultImpl<Buffer, void> > result_with_buf(new ResultImpl<Buffer, void>(floor_block_size(cur_buf.size())));
+                unsigned char *poutbuf = result_with_buf->result().buffer();
+                size_t outbuf_remaining = result_with_buf->result().size();
                 int writable_len = cur_buf.size();
                 int left_length = writable_len % BLOCK_SIZE;
                 if(left_length)
@@ -221,9 +222,9 @@ namespace jcp {
 				// TODO: Implement padding.
 
                 int rc;
-                std::unique_ptr< NoExceptionResult<Buffer> > result_with_buf(new NoExceptionResult<Buffer>(ceil_block_size(block_buf_pos_) + ((mode_ == DECRYPT_MODE) ? 0 : aead_tag_size_)));
-                unsigned char* poutbuf = result_with_buf->result()->buffer();
-                size_t remainging_outbuf = result_with_buf->result()->size();
+                std::unique_ptr< ResultImpl<Buffer, void> > result_with_buf(new ResultImpl<Buffer, void>(ceil_block_size(block_buf_pos_) + ((mode_ == DECRYPT_MODE) ? 0 : aead_tag_size_)));
+                unsigned char* poutbuf = result_with_buf->result().buffer();
+                size_t remainging_outbuf = result_with_buf->result().size();
                 if (block_buf_pos_ > 0) {
                     size_t olen = remainging_outbuf;
                     rc = mbedtls_cipher_update(&ctx_, block_buf_data_, block_buf_pos_, poutbuf, &olen);
@@ -236,7 +237,7 @@ namespace jcp {
                     }else if(mode_ == DECRYPT_MODE) {
                         rc = mbedtls_cipher_check_tag(&ctx_, aead_tag_buf_.data(), aead_tag_pos_);
                         if(rc) {
-                            return std::unique_ptr<Result<Buffer>>(new ExceptionResultImpl<Buffer, exception::AEADBadTagException>());
+                            return std::unique_ptr<Result<Buffer>>(ResultBuilder<Buffer, exception::AEADBadTagException>().withException().build());
                         }
                     }
                 }

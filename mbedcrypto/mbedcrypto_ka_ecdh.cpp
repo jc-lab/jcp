@@ -45,7 +45,7 @@ namespace jcp {
                 mbedtls_ecdh_free(&ctx_pub_);
             }
 
-            std::unique_ptr<Result<void>> init(AsymKey *key, SecureRandom *secure_random) override {
+            std::unique_ptr<Result<void>> init(const AsymKey *key, SecureRandom *secure_random) override {
                 if(secure_random) {
                     secure_random_ = secure_random;
                 }else{
@@ -59,7 +59,7 @@ namespace jcp {
                 return std::unique_ptr<Result<void>>();
             }
 
-            std::unique_ptr<Result<SecretKey>> doPhase(AsymKey *key, SecureRandom *secure_random) override {
+            std::unique_ptr<Result<SecretKey>> doPhase(const AsymKey *key, SecureRandom *secure_random) override {
 				int rc;
 				mbedtls_mpi z;
 
@@ -77,15 +77,15 @@ namespace jcp {
                     mbedtls_mpi_write_binary(&z, &shared_secret_[0], len);
 				}
 				mbedtls_mpi_free(&z);
+				if(rc == MBEDTLS_ERR_ECP_INVALID_KEY)
+					return std::unique_ptr<Result<SecretKey>>(ResultBuilder<SecretKey, exception::InvalidKeyException>().withException().build());
 				if (rc)
-				{
-					return std::unique_ptr<Result<SecretKey>>(new ExceptionResultImpl<SecretKey, exception::GeneralException>());
-				}
-				return std::unique_ptr<Result<SecretKey>>(new NoExceptionResult<SecretKey>());
+					return std::unique_ptr<Result<SecretKey>>(ResultBuilder<SecretKey, exception::GeneralException>().withException().build());
+				return std::unique_ptr<Result<SecretKey>>(ResultBuilder<SecretKey, void>().build());
 			}
 
             std::unique_ptr<Result<Buffer>> generateSecret() override {
-				return std::unique_ptr<Result<Buffer>>(new NoExceptionResult<Buffer>(shared_secret_));
+				return std::unique_ptr<Result<Buffer>>(ResultBuilder<Buffer, void>(shared_secret_).build());
             }
         };
 

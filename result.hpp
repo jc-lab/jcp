@@ -17,6 +17,9 @@
 
 namespace jcp {
 
+    template<typename TResult, class TException>
+    class ResultBuilder;
+
     template<typename TResult>
     class Result {
     protected:
@@ -25,137 +28,221 @@ namespace jcp {
     public:
         Result() {}
 
-		template<typename... Args>
-        Result(Args&&... eargs)
+        Result(const TResult& value)
+                : result_(value)
+        { }
+
+        template<typename... Args>
+        Result(Args&& ... eargs)
                 : result_(eargs...)
         { }
 
         virtual ~Result() {}
 
-        const TResult &result() const {
+        const TResult& result() const {
             return result_;
         }
 
         virtual const std::exception* exception() const = 0;
+        virtual std::unique_ptr<std::exception> move_exception() = 0;
     };
 
     template <>
     class Result<void> {
     public:
+        Result() {}
+
         bool result() const {
             return (exception() == NULL);
         }
         virtual const std::exception* exception() const = 0;
+        virtual std::unique_ptr<std::exception> move_exception() = 0;
     };
 
-    template <typename TResult, class TException>
-    class ResultImpl : public Result<TResult>
-    {
-    private:
-        TException e_;
-
-    public:
-        ResultImpl() {}
-
-        ResultImpl(TResult result)
-                : Result(result), e_()
-        { }
-
-        template<typename... EArgs>
-        ResultImpl(TResult result, EArgs&&... eargs)
-                : Result(result), e_(std::forward<EArgs>(eargs))
-        { }
-
-        const std::exception* exception() const override {
-            return &e_;
-        }
-    };
-
-    template <typename TResult, class TException>
-    class ResultImpl< TResult, std::unique_ptr<TException> > : public Result<TResult>
-    {
-    private:
+    template<typename TResult, class TException>
+    class ResultImpl : public Result<TResult> {
+    protected:
+        friend class ResultBuilder<TResult, TException>;
         std::unique_ptr<TException> e_;
 
     public:
-        ResultImpl(TResult result, std::unique_ptr<TException> e)
-                : Result(result), e_(e)
+        ResultImpl()
+                : Result()
+        { }
+
+        ResultImpl(const TResult& value)
+                : Result(value)
+        { }
+
+        template<typename... Args>
+        ResultImpl(Args&& ... eargs)
+                : Result(eargs...)
         { }
 
         const std::exception* exception() const override {
             return e_.get();
         }
-    };
 
-    template <typename TResult, class TException>
-    class ExceptionResultImpl : public Result<TResult>
-    {
-    private:
-        TException e_;
-
-    public:
-        ExceptionResultImpl() {}
-
-        template<typename... EArgs>
-        ExceptionResultImpl(EArgs&&... eargs)
-                : e_(eargs...)
-        { }
-
-        const std::exception* exception() const override {
-            return &e_;
-        }
-    };
-
-    template <typename TResult, class TException>
-    class ExceptionResultImpl< TResult, std::unique_ptr<TException> > : public Result<TResult>
-    {
-    private:
-        std::unique_ptr<TException> e_;
-
-    public:
-        ExceptionResultImpl(std::unique_ptr<TException> e)
-                : e_(e)
-        { }
-
-        const std::exception* exception() const override {
-            return e_.get();
-        }
-    };
-
-    template <class TException>
-    class ExceptionResultImpl<void, std::unique_ptr<TException> > : public Result<void>
-    {
-    private:
-        std::unique_ptr<TException> e_;
-
-    public:
-        ExceptionResultImpl(std::unique_ptr<TException> e)
-                : e_(e)
-        { }
-
-        const std::exception* exception() const override {
-            return e_.get();
+        std::unique_ptr<std::exception> move_exception() override {
+            return std::move(e_);
         }
     };
 
     template<typename TResult>
-    class NoExceptionResult : public Result<TResult>
-    {
+    class ResultImpl<TResult, void> : public Result<TResult> {
+    protected:
+        friend class ResultBuilder<TResult, void>;
+
     public:
-        NoExceptionResult() : Result()
+        ResultImpl()
+                : Result()
         { }
 
-		template<typename... Args>
-		NoExceptionResult(Args&& ... args)
-			: Result(args...)
-		{ }
+        ResultImpl(const TResult& value)
+                : Result(value)
+        { }
 
-        TResult *result() {
-            return &result_;
-        }
+        template<typename... Args>
+        ResultImpl(Args&& ... eargs)
+                : Result(eargs...)
+        { }
 
         const std::exception* exception() const override {
             return NULL;
+        }
+
+        std::unique_ptr<std::exception> move_exception() override {
+            return NULL;
+        }
+
+        TResult &result() {
+            return result_;
+        }
+    };
+
+    template<class TException>
+    class ResultImpl<void, TException> : public Result<void> {
+    protected:
+        friend class ResultBuilder<void, TException>;
+        std::unique_ptr<TException> e_;
+
+    public:
+        ResultImpl()
+                : Result()
+        { }
+
+        const std::exception* exception() const override {
+            return e_.get();
+        }
+
+        std::unique_ptr<std::exception> move_exception() override {
+            return std::move(e_);
+        }
+    };
+
+    template<>
+    class ResultImpl<void, void> : public Result<void> {
+    protected:
+        friend class ResultBuilder<void, void>;
+
+    public:
+        ResultImpl()
+                : Result()
+        { }
+
+        const std::exception* exception() const override {
+            return NULL;
+        }
+
+        std::unique_ptr<std::exception> move_exception() override {
+            return NULL;
+        }
+    };
+
+    template<typename TResult, class TException>
+    class ResultBuilder {
+    private:
+        std::unique_ptr<ResultImpl<TResult, TException>> result_;
+
+    public:
+        ResultBuilder() : result_(new ResultImpl<TResult, TException>()) {
+        }
+
+        template<typename... RArgs>
+        ResultBuilder(RArgs... args) : result_(new ResultImpl<TResult, TException>(args...)) {
+        }
+
+        ResultBuilder<TResult, TException>&withOtherException(std::unique_ptr<TException> &e) {
+            result_->e_ = std::move(e);
+            return *this;
+        }
+
+        template<typename... EArgs>
+        ResultBuilder<TResult, TException>&withException(EArgs... args) {
+            result_->e_ = std::unique_ptr<TException>(new TException(args...));
+            return *this;
+        }
+
+        std::unique_ptr<ResultImpl<TResult, TException>> build() {
+            return std::move(result_);
+        }
+    };
+
+    template<class TException>
+    class ResultBuilder<void, TException> {
+    private:
+        std::unique_ptr<ResultImpl<void, TException>> result_;
+
+    public:
+        ResultBuilder() : result_(new ResultImpl<void, TException>()) {
+        }
+
+        template<class TException>
+        ResultBuilder<void, TException>&withOtherException(std::unique_ptr<TException> &e) {
+            result_->e_ = std::move(e);
+            return *this;
+        }
+
+        template<typename... EArgs>
+        ResultBuilder<void, TException>&withException(EArgs... args) {
+            result_->e_ = std::unique_ptr<TException>(new TException(args...));
+            return *this;
+        }
+
+        std::unique_ptr<ResultImpl<void, TException>> build() {
+            return std::move(result_);
+        }
+    };
+
+    template<typename TResult>
+    class ResultBuilder<TResult, void> {
+    private:
+        std::unique_ptr<ResultImpl<TResult, void>> result_;
+
+    public:
+        ResultBuilder(const TResult &value) : result_(new ResultImpl<TResult, void>(value)) {
+        }
+
+        template<typename... RArgs>
+        ResultBuilder(RArgs... args) : result_(new ResultImpl<TResult, void>(args...)) {
+        }
+
+        std::unique_ptr<ResultImpl<TResult, void>> build() {
+            return std::move(result_);
+        }
+    };
+
+    template<>
+    class ResultBuilder<void, void> {
+    private:
+        std::unique_ptr<ResultImpl<void, void>> result_;
+
+    public:
+        ResultBuilder() : result_(new ResultImpl<void, void>()) {
+        }
+
+        std::unique_ptr<ResultImpl<void, void>> build() {
+            return std::move(result_);
         }
     };
 

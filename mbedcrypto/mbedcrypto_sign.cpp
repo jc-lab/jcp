@@ -42,13 +42,13 @@ namespace jcp {
             {
             }
 
-            std::unique_ptr<Result<void>> initCommon(AsymKey *key, SecureRandom *secure_random) {
+            std::unique_ptr<Result<void>> initCommon(const AsymKey *key, SecureRandom *secure_random) {
                 int rc;
                 const mbedtls_pk_info_t *pk_info = mbedtls_pk_info_from_type(pk_type_);
                 rc = mbedtls_pk_setup(&pk_, pk_info);
                 if (rc)
                 {
-                    return std::unique_ptr<Result<void>>(new ExceptionResultImpl<void, exception::GeneralException>());
+                    return std::unique_ptr<Result<void>>(ResultBuilder<void, exception::GeneralException>().withException().build());
                 }
                 if (key->isRSAKey())
                 {
@@ -72,16 +72,18 @@ namespace jcp {
                         secure_random_ = local_secure_random_.get();
                     }
                 }
-				message_digest_ = md_factory_->create();
-                return std::unique_ptr<Result<void>>(new NoExceptionResult<void>());
+                if(md_type_ != MBEDTLS_MD_NONE) {
+                    message_digest_ = md_factory_->create();
+                }
+                return std::unique_ptr<Result<void>>(ResultBuilder<void, void>().build());
             }
 
-            std::unique_ptr<Result<void>> initSign(AsymKey *key, SecureRandom *secure_random) override {
+            std::unique_ptr<Result<void>> initSign(const AsymKey *key, SecureRandom *secure_random) override {
                 verify_mode_ = false;
                 return initCommon(key, secure_random);
             }
 
-            std::unique_ptr<Result<void>> initVerify(AsymKey *key) override {
+            std::unique_ptr<Result<void>> initVerify(const AsymKey *key) override {
                 verify_mode_ = true;
                 return initCommon(key, NULL);
             }
@@ -93,7 +95,7 @@ namespace jcp {
 					const unsigned char* pinbuf = (const unsigned char*)buf;
 					input_buf_.insert(input_buf_.end(), &pinbuf[0], &pinbuf[length]);
 				}
-                return std::unique_ptr<Result<void>>(new NoExceptionResult<void>());
+                return std::unique_ptr<Result<void>>(ResultBuilder<void, void>().build());
             }
 
             std::unique_ptr<Result<Buffer>> sign() override {
@@ -108,9 +110,9 @@ namespace jcp {
 				}
                 if(rc)
                 {
-                    return std::unique_ptr<Result<Buffer>>(new ExceptionResultImpl<Buffer, exception::GeneralException>());
+                    return std::unique_ptr<Result<Buffer>>(ResultBuilder<Buffer, exception::GeneralException>().withException().build());
                 }
-                return std::unique_ptr<Result<Buffer>>(new NoExceptionResult<Buffer>(sign_buf.data(), olen));
+                return std::unique_ptr<Result<Buffer>>(new ResultImpl<Buffer, void>(sign_buf.data(), olen));
             }
 
             std::unique_ptr<Result<bool>> verify(const unsigned char *signature, size_t length) override {
@@ -121,11 +123,11 @@ namespace jcp {
 				} else {
 					rc = mbedtls_pk_verify(&pk_, md_type_, input_buf_.data(), input_buf_.size(), signature, length);
 				}
+				if (rc == MBEDTLS_ERR_ECP_VERIFY_FAILED)
+					return std::unique_ptr<Result<bool>>(ResultBuilder<bool, void>(false).build());
                 if(rc)
-                {
                     return std::unique_ptr<Result<bool>>(new ResultImpl<bool, exception::GeneralException>(false));
-                }
-                return std::unique_ptr<Result<bool>>(new NoExceptionResult<bool>(true));
+                return std::unique_ptr<Result<bool>>(ResultBuilder<bool, void>(true).build());
             }
 
         };

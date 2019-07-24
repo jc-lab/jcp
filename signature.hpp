@@ -33,8 +33,8 @@ namespace jcp {
         Signature(Provider *provider) : provider_(provider) {}
         Provider *getProvider() const { return provider_; }
 
-        virtual std::unique_ptr< Result<void> > initSign(AsymKey *key, SecureRandom *secure_random = NULL) = 0;
-        virtual std::unique_ptr< Result<void> > initVerify(AsymKey *key) = 0;
+        virtual std::unique_ptr< Result<void> > initSign(const AsymKey *key, SecureRandom *secure_random = NULL) = 0;
+        virtual std::unique_ptr< Result<void> > initVerify(const AsymKey *key) = 0;
 
         virtual std::unique_ptr< Result<void> > update(const void *buf, size_t length) = 0;
 

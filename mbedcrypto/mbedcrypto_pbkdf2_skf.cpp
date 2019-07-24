@@ -19,7 +19,7 @@ namespace jcp {
         {
             const PBEKeySpec *pbe_key_spec = dynamic_cast<const PBEKeySpec*>(key_spec);
             if(!pbe_key_spec) {
-                return std::unique_ptr<Result<SecretKey>>(new ExceptionResultImpl<SecretKey, exception::InvalidKeySpecException>());
+                return std::unique_ptr<Result<SecretKey>>(ResultBuilder<SecretKey, exception::InvalidKeySpecException>().withException().build());
             }
 
             std::unique_ptr<Mac> prf = mac_factory_->create();
@@ -40,7 +40,7 @@ namespace jcp {
                 ti_offset += hLen;
             }
 
-            std::unique_ptr<NoExceptionResult<SecretKey>> result_with_sk(new NoExceptionResult<SecretKey>(&Tbuf[0], requestedKeyLen));
+			std::unique_ptr<ResultImpl<SecretKey, void>> result_with_sk(ResultBuilder<SecretKey, void>(&Tbuf[0], requestedKeyLen).build());
             return std::move(result_with_sk);
         }
 

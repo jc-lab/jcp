@@ -40,17 +40,17 @@ namespace jcp {
             }
             std::unique_ptr<Result<void>> update(const void *buf, size_t length) override {
                 mbedtls_md_update(&ctx_, (const unsigned char*)buf, length);
-                return std::unique_ptr<Result<void>>(new NoExceptionResult<void>());
+                return std::unique_ptr<Result<void>>(ResultBuilder<void, void>().build());
             }
 
             std::unique_ptr<Result<void>> digest(unsigned char *buf) override {
                 mbedtls_md_finish(&ctx_, buf);
-                return std::unique_ptr<Result<void>>(new NoExceptionResult<void>());
+                return std::unique_ptr<Result<void>>(ResultBuilder<void, void>().build());
             }
 
             std::unique_ptr<Result<Buffer>> digest() override {
-                std::unique_ptr<NoExceptionResult<Buffer>> result(new NoExceptionResult<Buffer>(digest_size()));
-                mbedtls_md_finish(&ctx_, result->result()->buffer());
+                std::unique_ptr<ResultImpl<Buffer, void>> result(ResultBuilder<Buffer, void>(digest_size()).build());
+                mbedtls_md_finish(&ctx_, result->result().buffer());
                 return std::move(result);
             }
         };
@@ -84,17 +84,17 @@ namespace jcp {
 
             std::unique_ptr<Result<void>> update(const void *buf, size_t length) override {
                 mbedtls_md_hmac_update(&ctx_, (const unsigned char*)buf, length);
-                return std::unique_ptr<Result<void>>(new NoExceptionResult<void>());
+                return std::unique_ptr<Result<void>>(ResultBuilder<void, void>().build());
             }
 
             std::unique_ptr<Result<void>> digest(unsigned char *buf) override {
                 mbedtls_md_hmac_finish(&ctx_, buf);
-                return std::unique_ptr<Result<void>>(new NoExceptionResult<void>());
+                return std::unique_ptr<Result<void>>(ResultBuilder<void, void>().build());
             }
 
             std::unique_ptr<Result<Buffer>> digest() override {
-                std::unique_ptr<NoExceptionResult<Buffer>> result(new NoExceptionResult<Buffer>());
-                mbedtls_md_hmac_finish(&ctx_, result->result()->resize(digest_size()));
+                std::unique_ptr<ResultImpl<Buffer, void>> result(ResultBuilder<Buffer, void>().build());
+                mbedtls_md_hmac_finish(&ctx_, result->result().resize(digest_size()));
                 return std::move(result);
             }
 

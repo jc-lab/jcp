@@ -31,8 +31,8 @@ namespace jcp {
         KeyAgreement(Provider *provider) : provider_(provider) {}
         Provider *getProvider() const { return provider_; }
 
-        virtual std::unique_ptr<Result<void>> init(AsymKey *key, SecureRandom *secure_random = NULL) = 0;
-        virtual std::unique_ptr<Result<SecretKey>> doPhase(AsymKey *key, SecureRandom *secure_random = NULL) = 0;
+        virtual std::unique_ptr<Result<void>> init(const AsymKey *key, SecureRandom *secure_random = NULL) = 0;
+        virtual std::unique_ptr<Result<SecretKey>> doPhase(const AsymKey *key, SecureRandom *secure_random = NULL) = 0;
         virtual std::unique_ptr<Result<Buffer>> generateSecret() = 0;
     };
 

@@ -71,8 +71,8 @@ namespace jcp {
             if(update_result->exception())
                 return std::move(update_result);
 
-            std::unique_ptr< NoExceptionResult<Buffer> > result_with_buf(new NoExceptionResult<Buffer>(update_result->result().size() + final_result->result().size()));
-            unsigned char *poutbuf = result_with_buf->result()->buffer();
+            std::unique_ptr< ResultImpl<Buffer, void> > result_with_buf(new ResultImpl<Buffer, void>(update_result->result().size() + final_result->result().size()));
+            unsigned char *poutbuf = result_with_buf->result().buffer();
             memcpy(poutbuf, update_result->result().data(), update_result->result().size());
             poutbuf += update_result->result().size();
             memcpy(poutbuf, final_result->result().data(), final_result->result().size());
