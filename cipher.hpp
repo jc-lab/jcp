@@ -67,7 +67,7 @@ namespace jcp {
             if(update_result->exception())
                 return std::move(update_result);
 
-            std::unique_ptr< Result<Buffer> > final_result = doFinal(buf, length);
+            std::unique_ptr< Result<Buffer> > final_result = doFinal();
             if(update_result->exception())
                 return std::move(update_result);
 
