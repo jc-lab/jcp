@@ -40,7 +40,12 @@ namespace jcp {
             MbedcryptoSign(Provider *provider, mbedtls_pk_type_t pk_type, mbedtls_md_type_t md_type, MbedcryptoMessageDigestFactory* md_factory)
                 : Signature(provider), pk_type_(pk_type), md_type_(md_type), md_factory_(md_factory)
             {
+				mbedtls_pk_init(&pk_);
             }
+
+			~MbedcryptoSign() {
+				mbedtls_pk_free(&pk_);
+			}
 
             std::unique_ptr<Result<void>> initCommon(const AsymKey *key, SecureRandom *secure_random) {
                 int rc;
