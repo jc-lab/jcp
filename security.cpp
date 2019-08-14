@@ -14,7 +14,7 @@
 #include "mbedcrypto/mbedcrypto_provider.hpp"
 #endif
 #if defined(HAS_OPENSSL) && HAS_OPENSSL
-//#include "openssl/openssl_provider.hpp"
+#include "openssl/openssl_provider.hpp"
 #endif
 
 namespace jcp {
@@ -27,7 +27,7 @@ namespace jcp {
         providers_.push_back(std::shared_ptr<MbedcryptoProvider>(new MbedcryptoProvider()));
 #endif
 #if defined(HAS_OPENSSL) && HAS_OPENSSL
-	//providers_.push_back(std::shared_ptr<OpensslProvider>(new OpensslProvider()));
+		providers_.push_back(std::shared_ptr<OpensslProvider>(new OpensslProvider()));
 #endif
     }
 
