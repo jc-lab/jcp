@@ -60,6 +60,7 @@ namespace jcp {
         unsigned long getOpensslError() const override;
         const RSA *getOpensslRSAKey() const override;
         const EC_KEY *getOpensslECKey() const override;
+        std::unique_ptr<EVP_PKEY, void(*)(EVP_PKEY*)> getOpensslEVPPKey() const override;
         void copyFromOpensslRSAKey(const RSA *rsa) override;
         void copyFromOpensslECKey(const EC_KEY *ec) override;
 

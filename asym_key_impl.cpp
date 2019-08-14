@@ -131,9 +131,25 @@ namespace jcp {
         return ossl_rsa_.get();
     }
 
-    const EC_KEY *AsymKeyImpl::getOpensslECKey() const {
-        return ossl_ec_.get();
-    }
+	const EC_KEY* AsymKeyImpl::getOpensslECKey() const {
+		return ossl_ec_.get();
+	}
+
+	std::unique_ptr<EVP_PKEY, void(*)(EVP_PKEY*)> AsymKeyImpl::getOpensslEVPPKey() const {
+		std::unique_ptr<EVP_PKEY, void(*)(EVP_PKEY*)> pkey(EVP_PKEY_new(), EVP_PKEY_free);
+
+		switch (key_type_) {
+		case KEY_RSA_PUBLIC:
+		case KEY_RSA_PRIVATE:
+			EVP_PKEY_set1_RSA(pkey.get(), ossl_rsa_.get());
+			break;
+		case KEY_EC_PRIVATE:
+		case KEY_EC_PUBLIC:
+			EVP_PKEY_set1_EC_KEY(pkey.get(), ossl_ec_.get());
+			break;
+		}
+		return std::move(pkey);
+	}
 
     void AsymKeyImpl::copyFromOpensslRSAKey(const RSA *rsa) {
         KeyType key_type = KEY_RSA_PRIVATE;

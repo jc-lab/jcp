@@ -42,6 +42,7 @@ namespace jcp {
         virtual unsigned long getOpensslError() const = 0;
         virtual const RSA *getOpensslRSAKey() const = 0;
         virtual const EC_KEY *getOpensslECKey() const = 0;
+		virtual std::unique_ptr<EVP_PKEY, void(*)(EVP_PKEY*)> getOpensslEVPPKey() const = 0;
         virtual void copyFromOpensslRSAKey(const RSA *rsa) = 0;
         virtual void copyFromOpensslECKey(const EC_KEY *ec) = 0;
 #endif
