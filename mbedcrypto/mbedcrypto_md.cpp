@@ -73,9 +73,10 @@ namespace jcp {
             }
 
         public:
-            void init(SecretKey *key) override {
+			std::unique_ptr<Result<void>> init(SecretKey *key) override {
                 const std::vector<unsigned char> &plain_key = internal::KeyAccessor::getPlainKey(key);
                 mbedtls_md_hmac_starts(&ctx_, &plain_key[0], plain_key.size());
+				return std::unique_ptr<Result<void>>(ResultBuilder<void, void>().build());
             }
 
             int digest_size() const override {

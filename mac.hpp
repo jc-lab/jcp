@@ -28,7 +28,7 @@ namespace jcp {
         Mac(Provider *provider) : provider_(provider) {}
         Provider *getProvider() const { return provider_; }
 
-        virtual void init(SecretKey *key) = 0;
+		virtual std::unique_ptr< Result<void> > init(SecretKey* key) = 0;
         virtual int digest_size() const = 0;
         virtual std::unique_ptr< Result<void> > update(const void *buf, size_t length) = 0;
         virtual std::unique_ptr< Result<void> > digest(unsigned char *buf) = 0;
