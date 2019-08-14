@@ -1,21 +1,21 @@
 /**
- * @file	openssl_pbkdf2_skf.cpp
+ * @file	soft_pbkdf2_skf.cpp
  * @author	Jichan (development@jc-lab.net / http://ablog.jc-lab.net/ )
- * @date	2019/08/14
+ * @date	2019/07/24
  * @copyright Copyright (C) 2019 jichan.\n
  *            This software may be modified and distributed under the terms
  *            of the Apache License 2.0.  See the LICENSE file for details.
  */
-#include "openssl_pbkdf2_skf.hpp"
+#include "soft_pbkdf2_skf.hpp"
 #include "../pbe_key_spec.hpp"
 
 #include "../exception/invalid_key_spec.hpp"
 
 namespace jcp {
 
-    namespace openssl {
+    namespace soft {
 
-        std::unique_ptr<Result<SecretKey>> OpensslPBKDF2SecretKeyFactory::generateSecret(const KeySpec *key_spec) const
+        std::unique_ptr<Result<SecretKey>> SoftPBKDF2SecretKeyFactory::generateSecret(const KeySpec *key_spec) const
         {
             const PBEKeySpec *pbe_key_spec = dynamic_cast<const PBEKeySpec*>(key_spec);
             if(!pbe_key_spec) {
@@ -44,7 +44,7 @@ namespace jcp {
             return std::move(result_with_sk);
         }
 
-        void OpensslPBKDF2SecretKeyFactory::F(unsigned char *dest, int offset, Mac *prf, const PBEKeySpec *key_spec, int block_index, unsigned char *U_r, unsigned char *U_i) const {
+        void SoftPBKDF2SecretKeyFactory::F(unsigned char *dest, int offset, Mac *prf, const PBEKeySpec *key_spec, int block_index, unsigned char *U_r, unsigned char *U_i) const {
             int hLen = prf->getMacLength();
             const std::vector<unsigned char> &salt = key_spec->getSalt();
             int U_i_len = salt.size() + 4;
@@ -63,7 +63,7 @@ namespace jcp {
             memcpy(&dest[offset], U_r, hLen);
         }
 
-    } // namespace openssl
+    } // namespace soft
 
 } // namespace jcp
 

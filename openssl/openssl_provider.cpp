@@ -21,7 +21,9 @@
 #include "openssl_md.hpp"
 #include "openssl_ka_ecdh.hpp"
 #include "openssl_sign.hpp"
-#include "openssl_pbkdf2_skf.hpp"
+
+#include "../soft/soft_pbkdf2_skf.hpp"
+#include "../soft/soft_hkdf_skf.hpp"
 
 #include <openssl/evp.h>
 
@@ -86,12 +88,17 @@ namespace jcp {
 		addSignatureAlgorithm(&SignatureAlgorithm::SHA256withRSA, std::unique_ptr<openssl::OpensslSignFactory>(new openssl::OpensslSignFactory(this, EVP_sha256())));
 		addSignatureAlgorithm(&SignatureAlgorithm::SHA384withRSA, std::unique_ptr<openssl::OpensslSignFactory>(new openssl::OpensslSignFactory(this, EVP_sha384())));
 		addSignatureAlgorithm(&SignatureAlgorithm::SHA512withRSA, std::unique_ptr<openssl::OpensslSignFactory>(new openssl::OpensslSignFactory(this, EVP_sha512())));
-		
-        addSecretKeyFactoryAlgorithm(&SecretKeyFactoryAlgorithm::PBKDF2WithHmacSHA1, std::unique_ptr<openssl::OpensslPBKDF2SecretKeyFactory>(new openssl::OpensslPBKDF2SecretKeyFactory(this, hmacSha1Factory)));
-        addSecretKeyFactoryAlgorithm(&SecretKeyFactoryAlgorithm::PBKDF2WithHmacSHA224, std::unique_ptr<openssl::OpensslPBKDF2SecretKeyFactory>(new openssl::OpensslPBKDF2SecretKeyFactory(this, hmacSha224Factory)));
-        addSecretKeyFactoryAlgorithm(&SecretKeyFactoryAlgorithm::PBKDF2WithHmacSHA256, std::unique_ptr<openssl::OpensslPBKDF2SecretKeyFactory>(new openssl::OpensslPBKDF2SecretKeyFactory(this, hmacSha256Factory)));
-        addSecretKeyFactoryAlgorithm(&SecretKeyFactoryAlgorithm::PBKDF2WithHmacSHA384, std::unique_ptr<openssl::OpensslPBKDF2SecretKeyFactory>(new openssl::OpensslPBKDF2SecretKeyFactory(this, hmacSha384Factory)));
-        addSecretKeyFactoryAlgorithm(&SecretKeyFactoryAlgorithm::PBKDF2WithHmacSHA512, std::unique_ptr<openssl::OpensslPBKDF2SecretKeyFactory>(new openssl::OpensslPBKDF2SecretKeyFactory(this, hmacSha512Factory)));
+
+        addSecretKeyFactoryAlgorithm(&SecretKeyFactoryAlgorithm::PBKDF2WithHmacSHA1, std::unique_ptr<soft::SoftPBKDF2SecretKeyFactory>(new soft::SoftPBKDF2SecretKeyFactory(this, hmacSha1Factory)));
+        addSecretKeyFactoryAlgorithm(&SecretKeyFactoryAlgorithm::PBKDF2WithHmacSHA224, std::unique_ptr<soft::SoftPBKDF2SecretKeyFactory>(new soft::SoftPBKDF2SecretKeyFactory(this, hmacSha224Factory)));
+        addSecretKeyFactoryAlgorithm(&SecretKeyFactoryAlgorithm::PBKDF2WithHmacSHA256, std::unique_ptr<soft::SoftPBKDF2SecretKeyFactory>(new soft::SoftPBKDF2SecretKeyFactory(this, hmacSha256Factory)));
+        addSecretKeyFactoryAlgorithm(&SecretKeyFactoryAlgorithm::PBKDF2WithHmacSHA384, std::unique_ptr<soft::SoftPBKDF2SecretKeyFactory>(new soft::SoftPBKDF2SecretKeyFactory(this, hmacSha384Factory)));
+        addSecretKeyFactoryAlgorithm(&SecretKeyFactoryAlgorithm::PBKDF2WithHmacSHA512, std::unique_ptr<soft::SoftPBKDF2SecretKeyFactory>(new soft::SoftPBKDF2SecretKeyFactory(this, hmacSha512Factory)));
+        addSecretKeyFactoryAlgorithm(&SecretKeyFactoryAlgorithm::HKDFWithSHA1, std::unique_ptr<soft::SoftHKDFSecretKeyFactory>(new soft::SoftHKDFSecretKeyFactory(this, hmacSha1Factory)));
+        addSecretKeyFactoryAlgorithm(&SecretKeyFactoryAlgorithm::HKDFWithSHA224, std::unique_ptr<soft::SoftHKDFSecretKeyFactory>(new soft::SoftHKDFSecretKeyFactory(this, hmacSha224Factory)));
+        addSecretKeyFactoryAlgorithm(&SecretKeyFactoryAlgorithm::HKDFWithSHA256, std::unique_ptr<soft::SoftHKDFSecretKeyFactory>(new soft::SoftHKDFSecretKeyFactory(this, hmacSha256Factory)));
+        addSecretKeyFactoryAlgorithm(&SecretKeyFactoryAlgorithm::HKDFWithSHA384, std::unique_ptr<soft::SoftHKDFSecretKeyFactory>(new soft::SoftHKDFSecretKeyFactory(this, hmacSha384Factory)));
+        addSecretKeyFactoryAlgorithm(&SecretKeyFactoryAlgorithm::HKDFWithSHA512, std::unique_ptr<soft::SoftHKDFSecretKeyFactory>(new soft::SoftHKDFSecretKeyFactory(this, hmacSha512Factory)));
     }
 
 } // namespace jcp

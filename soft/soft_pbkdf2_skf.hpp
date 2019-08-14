@@ -1,5 +1,5 @@
 /**
- * @file	mbedcrypto_pbkdf2_skf.hpp
+ * @file	soft_pbkdf2_skf.hpp
  * @author	Jichan (development@jc-lab.net / http://ablog.jc-lab.net/ )
  * @date	2019/07/24
  * @copyright Copyright (C) 2019 jichan.\n
@@ -8,22 +8,25 @@
  */
 #pragma once
 
-#ifndef __JCP_MBEDCRYPTO_MBEDCRYPTO_PBKDF2_SKF_H__
-#define __JCP_MBEDCRYPTO_MBEDCRYPTO_PBKDF2_SKF_H__
+#ifndef __JCP_SOFT_SOFT_PBKDF2_SKF_H__
+#define __JCP_SOFT_SOFT_PBKDF2_SKF_H__
 
 #include "../secret_key_factory.hpp"
 #include "../mac.hpp"
 
+#include <stdint.h>
+#include <memory>
+
 namespace jcp {
 
-    namespace mbedcrypto {
+    namespace soft {
 
-        class MbedcryptoPBKDF2SecretKeyFactory : public SecretKeyFactory {
+        class SoftPBKDF2SecretKeyFactory : public SecretKeyFactory {
         private:
             MacFactory *mac_factory_;
 
         public:
-            MbedcryptoPBKDF2SecretKeyFactory(Provider *provider, MacFactory *mac_factory)
+            SoftPBKDF2SecretKeyFactory(Provider *provider, MacFactory *mac_factory)
                     : SecretKeyFactory(provider), mac_factory_(mac_factory)
             {
             }
@@ -51,4 +54,4 @@ namespace jcp {
 
 } // namespace jcp
 
-#endif // __JCP_MBEDCRYPTO_MBEDCRYPTO_PBKDF2_SKF_H__
+#endif // __JCP_SOFT_SOFT_PBKDF2_SKF_H__

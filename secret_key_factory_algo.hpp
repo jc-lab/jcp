@@ -37,6 +37,11 @@ namespace jcp {
         static const SecretKeyFactoryAlgorithm PBKDF2WithHmacSHA256;
         static const SecretKeyFactoryAlgorithm PBKDF2WithHmacSHA384;
         static const SecretKeyFactoryAlgorithm PBKDF2WithHmacSHA512;
+        static const SecretKeyFactoryAlgorithm HKDFWithSHA1;
+        static const SecretKeyFactoryAlgorithm HKDFWithSHA224;
+        static const SecretKeyFactoryAlgorithm HKDFWithSHA256;
+        static const SecretKeyFactoryAlgorithm HKDFWithSHA384;
+        static const SecretKeyFactoryAlgorithm HKDFWithSHA512;
 
         SecretKeyFactoryAlgorithm(uint32_t algo_id, const char *name);
 
