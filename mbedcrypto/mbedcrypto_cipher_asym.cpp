@@ -54,7 +54,7 @@ namespace jcp {
                         encrypt_mode_ = true;
                         break;
                     case DECRYPT_MODE:
-                        encrypt_mode_ = true;
+                        encrypt_mode_ = false;
                         break;
                 }
                 if(secure_random) {

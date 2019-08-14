@@ -1,5 +1,5 @@
 /**
- * @file	mbedcrypto_cipher_rsa.hpp
+ * @file	mbedcrypto_cipher_asym.hpp
  * @author	Jichan (development@jc-lab.net / http://ablog.jc-lab.net/ )
  * @date	2019/07/19
  * @copyright Copyright (C) 2019 jichan.\n
