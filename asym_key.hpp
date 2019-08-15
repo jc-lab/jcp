@@ -12,9 +12,6 @@
 #ifndef __JCP_ASYM_KEY_H__
 #define __JCP_ASYM_KEY_H__
 
-#define HAS_OPENSSL 1
-#define HAS_MBEDCRYPTO 1
-
 #if defined(HAS_OPENSSL) && HAS_OPENSSL
 #include <openssl/rsa.h>
 #include <openssl/ec.h>
