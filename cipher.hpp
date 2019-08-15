@@ -68,8 +68,8 @@ namespace jcp {
                 return std::move(update_result);
 
             std::unique_ptr< Result<Buffer> > final_result = doFinal();
-            if(update_result->exception())
-                return std::move(update_result);
+            if(final_result->exception())
+                return std::move(final_result);
 
             std::unique_ptr< ResultImpl<Buffer, void> > result_with_buf(new ResultImpl<Buffer, void>(update_result->result().size() + final_result->result().size()));
             unsigned char *poutbuf = result_with_buf->result().buffer();
