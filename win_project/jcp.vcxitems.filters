@@ -1,0 +1,281 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="jcp">
+      <UniqueIdentifier>{ba1ec455-338b-45e8-9ecc-7e4288f79e34}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="jcp\openssl">
+      <UniqueIdentifier>{b25186bd-7559-40be-b622-b0721cbe6eed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="jcp\mbedcrypto">
+      <UniqueIdentifier>{19d0c5cf-567b-4584-8f19-48416d72eb83}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="jcp\internal">
+      <UniqueIdentifier>{d99a1853-e20f-4efd-bcf7-f9c055dc8bd1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="jcp\exception">
+      <UniqueIdentifier>{8d7dba7e-84f3-435d-b7ad-c248712ceec3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\asym_key_impl.cpp">
+      <Filter>jcp</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\cipher.cpp">
+      <Filter>jcp</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\cipher_algo.cpp">
+      <Filter>jcp</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\key_agreement.cpp">
+      <Filter>jcp</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\key_agreement_algo.cpp">
+      <Filter>jcp</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\mac.cpp">
+      <Filter>jcp</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\mac_algo.cpp">
+      <Filter>jcp</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\message_digest.cpp">
+      <Filter>jcp</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\message_digest_algo.cpp">
+      <Filter>jcp</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\provider.cpp">
+      <Filter>jcp</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\secret_key_factory.cpp">
+      <Filter>jcp</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\secret_key_factory_algo.cpp">
+      <Filter>jcp</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\secure_random.cpp">
+      <Filter>jcp</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\security.cpp">
+      <Filter>jcp</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\signature.cpp">
+      <Filter>jcp</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\signature_algo.cpp">
+      <Filter>jcp</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\openssl\openssl_cipher_sym.cpp">
+      <Filter>jcp\openssl</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\openssl\openssl_ka_ecdh.cpp">
+      <Filter>jcp\openssl</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\openssl\openssl_md.cpp">
+      <Filter>jcp\openssl</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\openssl\openssl_pbkdf2_skf.cpp">
+      <Filter>jcp\openssl</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\openssl\openssl_provider.cpp">
+      <Filter>jcp\openssl</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\openssl\openssl_securerandom.cpp">
+      <Filter>jcp\openssl</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\openssl\openssl_sign.cpp">
+      <Filter>jcp\openssl</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\openssl\openssl_cipher_asym.cpp">
+      <Filter>jcp\openssl</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\internal\key_accessor.cpp">
+      <Filter>jcp\internal</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\mbedcrypto\mbedcrypto_ka_ecdh.cpp">
+      <Filter>jcp\mbedcrypto</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\mbedcrypto\mbedcrypto_md.cpp">
+      <Filter>jcp\mbedcrypto</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\mbedcrypto\mbedcrypto_pbkdf2_skf.cpp">
+      <Filter>jcp\mbedcrypto</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\mbedcrypto\mbedcrypto_provider.cpp">
+      <Filter>jcp\mbedcrypto</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\mbedcrypto\mbedcrypto_securerandom.cpp">
+      <Filter>jcp\mbedcrypto</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\mbedcrypto\mbedcrypto_sign.cpp">
+      <Filter>jcp\mbedcrypto</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\mbedcrypto\mbedcrypto_cipher_asym.cpp">
+      <Filter>jcp\mbedcrypto</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\mbedcrypto\mbedcrypto_cipher_sym.cpp">
+      <Filter>jcp\mbedcrypto</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\asym_key_impl.hpp">
+      <Filter>jcp</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\buffer.hpp">
+      <Filter>jcp</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\cipher.hpp">
+      <Filter>jcp</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\cipher_algo.hpp">
+      <Filter>jcp</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\gcm_param_spec.hpp">
+      <Filter>jcp</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\iv_param_spec.hpp">
+      <Filter>jcp</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\key_agreement.hpp">
+      <Filter>jcp</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\key_agreement_algo.hpp">
+      <Filter>jcp</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\key_spec.hpp">
+      <Filter>jcp</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\mac.hpp">
+      <Filter>jcp</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\mac_algo.hpp">
+      <Filter>jcp</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\message_digest.hpp">
+      <Filter>jcp</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\message_digest_algo.hpp">
+      <Filter>jcp</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\pbe_key_spec.hpp">
+      <Filter>jcp</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\provider.hpp">
+      <Filter>jcp</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\random.hpp">
+      <Filter>jcp</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\result.hpp">
+      <Filter>jcp</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\secret_key.hpp">
+      <Filter>jcp</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\secret_key_factory.hpp">
+      <Filter>jcp</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\secret_key_factory_algo.hpp">
+      <Filter>jcp</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\secret_key_spec.hpp">
+      <Filter>jcp</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\secure_random.hpp">
+      <Filter>jcp</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\security.hpp">
+      <Filter>jcp</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\signature.hpp">
+      <Filter>jcp</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\signature_algo.hpp">
+      <Filter>jcp</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\algo.hpp">
+      <Filter>jcp</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\algo_param_spec.hpp">
+      <Filter>jcp</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\asym_key.hpp">
+      <Filter>jcp</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\openssl\openssl_cipher_asym.hpp">
+      <Filter>jcp\openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\openssl\openssl_cipher_sym.hpp">
+      <Filter>jcp\openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\openssl\openssl_ka_ecdh.hpp">
+      <Filter>jcp\openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\openssl\openssl_md.hpp">
+      <Filter>jcp\openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\openssl\openssl_pbkdf2_skf.hpp">
+      <Filter>jcp\openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\openssl\openssl_provider.hpp">
+      <Filter>jcp\openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\openssl\openssl_securerandom.hpp">
+      <Filter>jcp\openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\openssl\openssl_sign.hpp">
+      <Filter>jcp\openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\exception\invalid_algo_param.hpp">
+      <Filter>jcp\exception</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\exception\invalid_input.hpp">
+      <Filter>jcp\exception</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\exception\invalid_key.hpp">
+      <Filter>jcp\exception</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\exception\invalid_key_spec.hpp">
+      <Filter>jcp\exception</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\exception\aead_bad_tag.hpp">
+      <Filter>jcp\exception</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\exception\general.hpp">
+      <Filter>jcp\exception</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\internal\key_accessor.hpp">
+      <Filter>jcp\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\mbedcrypto\mbedcrypto_ka_ecdh.hpp">
+      <Filter>jcp\mbedcrypto</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\mbedcrypto\mbedcrypto_md.hpp">
+      <Filter>jcp\mbedcrypto</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\mbedcrypto\mbedcrypto_pbkdf2_skf.hpp">
+      <Filter>jcp\mbedcrypto</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\mbedcrypto\mbedcrypto_provider.hpp">
+      <Filter>jcp\mbedcrypto</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\mbedcrypto\mbedcrypto_securerandom.hpp">
+      <Filter>jcp\mbedcrypto</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\mbedcrypto\mbedcrypto_sign.hpp">
+      <Filter>jcp\mbedcrypto</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\mbedcrypto\mbedcrypto_cipher_asym.hpp">
+      <Filter>jcp\mbedcrypto</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\mbedcrypto\mbedcrypto_cipher_sym.hpp">
+      <Filter>jcp\mbedcrypto</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)..\LICENSE">
+      <Filter>jcp</Filter>
+    </None>
+  </ItemGroup>
+</Project>
