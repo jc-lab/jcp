@@ -57,7 +57,7 @@ namespace jcp {
 
         virtual ~ResultData() {}
 
-        const std::unique_ptr<TResult>& result() const {
+        std::unique_ptr<TResult>& result() {
             return result_;
         }
 
@@ -193,6 +193,9 @@ namespace jcp {
         const TResult& operator*() const {
             return data_->result();
         }
+		TResult& ref() const {
+			return data_->result();
+		}
         const std::exception* exception() const {
             return data_->exception();
         }
