@@ -1,0 +1,18 @@
+PublicKeyInfo DEFINITIONS ::=
+BEGIN
+
+Version ::= INTEGER
+
+PrivateKey ::= OCTET STRING
+
+AlgorithmIdentifier ::= SEQUENCE {
+    algorithm    OBJECT IDENTIFIER,
+    parameters   ANY DEFINED BY algorithm OPTIONAL
+}
+
+PublicKeyInfo ::= SEQUENCE {
+  algorithm       AlgorithmIdentifier,
+  publicKey       BIT STRING
+}
+
+END

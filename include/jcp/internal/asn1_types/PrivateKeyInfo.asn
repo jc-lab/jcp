@@ -1,0 +1,40 @@
+PrivateKeyInfo DEFINITIONS ::=
+BEGIN
+
+Version ::= INTEGER
+
+PrivateKey ::= OCTET STRING
+
+AlgorithmIdentifier ::= SEQUENCE {
+    algorithm    OBJECT IDENTIFIER,
+    parameters   ANY DEFINED BY algorithm OPTIONAL
+}
+
+PrivateKeyAlgorithmIdentifier ::= AlgorithmIdentifier
+
+AttributeSetValue ::= SET OF ANY
+
+Attribute ::= SEQUENCE {
+    type         OBJECT IDENTIFIER,
+    values       AttributeSetValue
+}
+
+Attributes ::= SET OF Attribute
+
+PrivateKeyInfo ::= SEQUENCE {
+    version      Version,
+    privateKeyAlgorithm  PrivateKeyAlgorithmIdentifier,
+    privateKey   PrivateKey,
+    attributes   [0] IMPLICIT Attributes OPTIONAL
+}
+
+EncryptionAlgorithmIdentifier ::= AlgorithmIdentifier
+
+EncryptedData ::= OCTET STRING
+
+EncryptedPrivateKeyInfo ::= SEQUENCE {
+    encryptionAlgorithm  [0] IMPLICIT EncryptionAlgorithmIdentifier,
+    encryptedData        [1] IMPLICIT EncryptedData
+}
+
+END
