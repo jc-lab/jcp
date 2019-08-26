@@ -27,6 +27,7 @@ namespace jcp {
 	class SecretKeyFactory;
     class SecureRandomFactory;
     class KeyFactoryFactory;
+    class KeyPairGeneratorFactory;
 
     class Security {
     private:
@@ -57,6 +58,8 @@ namespace jcp {
         SecretKeyFactory* findSecretKeyFactoryImpl(const char* name) const;
         KeyFactoryFactory* findKeyFactoryImpl(uint32_t algo_id) const;
         KeyFactoryFactory* findKeyFactoryImpl(const char* name) const;
+        KeyPairGeneratorFactory* findKeyPairGeneratorImpl(uint32_t algo_id) const;
+        KeyPairGeneratorFactory* findKeyPairGeneratorImpl(const char* name) const;
         SecureRandomFactory *findSecureRandomImpl() const;
         KeyUtils *findKeyUtilsImpl() const;
 
@@ -79,6 +82,8 @@ namespace jcp {
         static SecretKeyFactory* findSecretKeyFactory(const char* name);
         static KeyFactoryFactory* findKeyFactory(uint32_t algo_id);
         static KeyFactoryFactory* findKeyFactory(const char* name);
+        static KeyPairGeneratorFactory* findKeyPairGenerator(uint32_t algo_id);
+        static KeyPairGeneratorFactory* findKeyPairGenerator(const char* name);
         static SecureRandomFactory *findSecureRandom();
         static const KeyUtils *findKeyUtils();
     };

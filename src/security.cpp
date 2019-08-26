@@ -173,6 +173,25 @@ namespace jcp {
         return factory;
     }
 
+    KeyPairGeneratorFactory* Security::findKeyPairGeneratorImpl(uint32_t algo_id) const {
+        KeyPairGeneratorFactory* factory = NULL;
+        for (std::list< std::shared_ptr<Provider> >::const_iterator iter = providers_.cbegin(); (!factory) && (iter != providers_.cend()); iter++) {
+            factory = (*iter)->getKeyPairGenerator(algo_id);
+            if(factory)
+                break;
+        }
+        return factory;
+    }
+    KeyPairGeneratorFactory* Security::findKeyPairGeneratorImpl(const char* name) const {
+        KeyPairGeneratorFactory* factory = NULL;
+        for (std::list< std::shared_ptr<Provider> >::const_iterator iter = providers_.cbegin(); (!factory) && (iter != providers_.cend()); iter++) {
+            factory = (*iter)->getKeyPairGenerator(name);
+            if(factory)
+                break;
+        }
+        return factory;
+    }
+
     SecureRandomFactory *Security::findSecureRandomImpl() const {
         SecureRandomFactory* factory = NULL;
         for (std::list< std::shared_ptr<Provider> >::const_iterator iter = providers_.cbegin(); (!factory) && (iter != providers_.cend()); iter++) {
@@ -245,6 +264,12 @@ namespace jcp {
     }
     KeyFactoryFactory* Security::findKeyFactory(const char* name) {
         return getInstance()->findKeyFactoryImpl(name);
+    }
+    KeyPairGeneratorFactory* Security::findKeyPairGenerator(uint32_t algo_id) {
+        return getInstance()->findKeyPairGeneratorImpl(algo_id);
+    }
+    KeyPairGeneratorFactory* Security::findKeyPairGenerator(const char* name) {
+        return getInstance()->findKeyPairGeneratorImpl(name);
     }
 
     SecureRandomFactory *Security::findSecureRandom() {

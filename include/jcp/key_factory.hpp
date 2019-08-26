@@ -14,12 +14,10 @@
 #include <vector>
 
 #include "result.hpp"
-#include "asym_key.hpp"
 
 namespace jcp {
 
 	class Provider;
-	class KeySpec;
 
     class KeyFactory {
     protected:

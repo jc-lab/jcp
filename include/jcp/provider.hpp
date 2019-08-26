@@ -26,6 +26,7 @@
 #include "secret_key_factory.hpp"
 #include "secure_random.hpp"
 #include "key_factory.hpp"
+#include "key_pair_generator.hpp"
 #include "key_utils.hpp"
 
 namespace jcp {
@@ -40,6 +41,7 @@ namespace jcp {
     class SecretKeyFactory;
     class SecureRandomFactory;
     class KeyFactoryFactory;
+    class KeyPairGeneratorFactory;
 
     class CipherAlgorithm;
     class MessageDigestAlgorithm;
@@ -48,6 +50,7 @@ namespace jcp {
     class SignatureAlgorithm;
     class SecretKeyFactoryAlgorithm;
     class KeyFactoryAlgorithm;
+    class KeyPairAlgorithm;
 
     class KeyUtils;
 
@@ -90,6 +93,7 @@ namespace jcp {
         std::map<void*, AlgorithmItem<SignatureFactory> > sign_algos_;
         std::map<void*, AlgorithmItem<SecretKeyFactory> > skf_algos_;
         std::map<void*, AlgorithmItem<KeyFactoryFactory> > kf_algos_;
+        std::map<void*, AlgorithmItem<KeyPairGeneratorFactory> > kpg_algos_;
         std::unique_ptr<SecureRandomFactory> secure_random_fac_;
         std::unique_ptr<KeyUtils> key_utils_;
 
@@ -108,6 +112,8 @@ namespace jcp {
         void addSecretKeyFactoryAlgorithm(uint32_t algo_id, const char *name, std::unique_ptr<SecretKeyFactory> factory);
         void addKeyFactoryAlgorithm(const KeyFactoryAlgorithm *algorithm, std::unique_ptr<KeyFactoryFactory> factory);
         void addKeyFactoryAlgorithm(uint32_t algo_id, const char *name, std::unique_ptr<KeyFactoryFactory> factory);
+        void addKeyPairGeneratorAlgorithm(const KeyPairAlgorithm *algorithm, std::unique_ptr<KeyPairGeneratorFactory> factory);
+        void addKeyPairGeneratorAlgorithm(uint32_t algo_id, const char *name, std::unique_ptr<KeyPairGeneratorFactory> factory);
         void setSecureRandomFactory(std::unique_ptr<SecureRandomFactory> factory);
         void setKeyUtils(std::unique_ptr<KeyUtils> key_utils);
 
@@ -126,6 +132,8 @@ namespace jcp {
         SecretKeyFactory *getSecretKeyFactory(const char *name);
         KeyFactoryFactory *getKeyFactoryFactory(uint32_t algo_id);
         KeyFactoryFactory *getKeyFactoryFactory(const char *name);
+        KeyPairGeneratorFactory *getKeyPairGenerator(uint32_t algo_id);
+        KeyPairGeneratorFactory *getKeyPairGenerator(const char *name);
         SecureRandomFactory *getSecureRandom();
         KeyUtils *getKeyUtils();
     };

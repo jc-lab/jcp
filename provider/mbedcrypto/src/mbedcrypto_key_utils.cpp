@@ -11,15 +11,60 @@
 #include <jcp/ec_private_key.hpp>
 #include <jcp/ec_public_key.hpp>
 
+#include <jcp/asn1/pkcs8/pkcs_object_Identifiers.hpp>
 #include <jcp/asn1/x9/x9_object_identifiers.hpp>
 #include <jcp/asn1/sec/sec_object_identifiers.hpp>
 #include <jcp/asn1/edec/edec_object_identifiers.hpp>
 #include <jcp/asn1/teletrust/teletrust_object_identifiers.hpp>
 #include <jcp/rsa_private_key.hpp>
 #include <jcp/rsa_public_key.hpp>
+#include <jcp/internal/asn1_types/PrivateKeyInfo.h>
+#include <jcp/internal/asn1_types/RSAPrivateKey.h>
+#include <jcp/internal/asn1_types/ECPrivateKey.h>
+#include <jcp/internal/asn1c/INTEGER.h>
+#include <jcp/internal/asn1c/NULL.h>
+#include <jcp/internal/asn1c/der_encoder.h>
 
 namespace jcp {
     namespace mbedcrypto {
+
+        class MbedcryptoKeyUtils::MpiWrappedBigInteger : public BigInteger {
+        public:
+            mbedtls_mpi mpi_;
+
+            MpiWrappedBigInteger() {
+                mbedtls_mpi_init(&mpi_);
+            }
+            ~MpiWrappedBigInteger() {
+                mbedtls_mpi_free(&mpi_);
+            }
+
+            void copyFrom(const BigInteger &src) override {
+            }
+            void copyFrom(const unsigned char *buffer, size_t length) override {
+            }
+            void copyTo(std::vector<unsigned char> &buffer) const override {
+                int rc;
+                buffer.resize(1024);
+                rc = mbedtls_mpi_write_binary(&mpi_, &buffer[0], buffer.size());
+                if(rc > 0) {
+                    buffer.resize(rc);
+                }
+            }
+            mbedtls_mpi *mpi() {
+                return &mpi_;
+            }
+            void copyToAsn1Integer(INTEGER_t *container) {
+                int rc;
+                size_t len = mbedtls_mpi_size(&mpi_);
+                container->size = 0;
+                container->buf = (uint8_t*)malloc(len);
+                rc = mbedtls_mpi_write_binary(&mpi_, container->buf, len);
+                if(rc == 0) {
+                    container->size = len;
+                }
+            }
+        };
 
         jcp::Result<std::unique_ptr<AsymKey>> MbedcryptoKeyUtils::decodePkcs8PrivateKey(const unsigned char *der, int der_length) const {
             return nullptr;
@@ -177,6 +222,97 @@ namespace jcp {
             }
 
             return false;
+        }
+
+        std::unique_ptr<jcp::AsymKey> MbedcryptoKeyUtils::makeRsaToPrivateKey(mbedtls_rsa_context *rsa) {
+            std::unique_ptr<jcp::AsymKey> result;
+            PrivateKeyInfo_t asn_private_key_info;
+            RSAPrivateKey_t asn_rsa_private_key;
+
+            std::vector<unsigned char> oid = asn1::pkcs8::PKCS8ObjectIdentifiers::rsaEncryption.getEncoded();
+            std::vector<unsigned char> buffer(4096);
+
+            asn_enc_rval_t asn_rc;
+            asn_dec_rval_t asn_dec_rc;
+
+            MpiWrappedBigInteger key_n;
+            MpiWrappedBigInteger key_pub_e;
+            MpiWrappedBigInteger key_pri_e;
+            MpiWrappedBigInteger key_prime1;
+            MpiWrappedBigInteger key_prime2;
+            MpiWrappedBigInteger key_exponent1;
+            MpiWrappedBigInteger key_exponent2;
+            MpiWrappedBigInteger key_coefficient;
+
+            unsigned char dummy[1] = {0};
+
+            mbedtls_rsa_export(rsa, key_n.mpi(), key_prime1.mpi(), key_prime2.mpi(), key_pri_e.mpi(), key_pub_e.mpi());
+            mbedtls_rsa_export_crt(rsa, key_exponent1.mpi(), key_exponent2.mpi(), key_coefficient.mpi());
+
+            memset(&asn_private_key_info, 0, sizeof(asn_private_key_info));
+            memset(&asn_rsa_private_key, 0, sizeof(asn_rsa_private_key));
+            asn_private_key_info.version = 0;
+
+            {
+                OBJECT_IDENTIFIER_t *oid_ptr = &asn_private_key_info.privateKeyAlgorithm.algorithm;
+                asn_dec_rc = ber_decode_primitive(NULL,
+                                                  &asn_DEF_OBJECT_IDENTIFIER,
+                                                  (void **) &oid_ptr,
+                                                  oid.data(),
+                                                  oid.size(),
+                                                  0);
+            }
+            {
+                unsigned char temp_buf[32];
+                NULL_t null_value = 0;
+                asn_enc_rval_t temp_rc = der_encode_to_buffer(&asn_DEF_NULL, (void*)&null_value, temp_buf, sizeof(temp_buf));
+                asn_dec_rc = ber_decode(NULL, &asn_DEF_ANY, (void**)&asn_private_key_info.privateKeyAlgorithm.parameters, temp_buf, temp_rc.encoded);
+            }
+
+            asn_rsa_private_key.version = rsa->ver;
+            key_n.copyToAsn1Integer(&asn_rsa_private_key.modulus);
+            key_pub_e.copyToAsn1Integer(&asn_rsa_private_key.publicExponent);
+            key_pri_e.copyToAsn1Integer(&asn_rsa_private_key.privateExponent);
+            key_prime1.copyToAsn1Integer(&asn_rsa_private_key.prime1);
+            key_prime2.copyToAsn1Integer(&asn_rsa_private_key.prime2);
+            key_exponent1.copyToAsn1Integer(&asn_rsa_private_key.exponent1);
+            key_exponent2.copyToAsn1Integer(&asn_rsa_private_key.exponent2);
+            key_coefficient.copyToAsn1Integer(&asn_rsa_private_key.coefficient);
+
+            asn_rc = der_encode_to_buffer(&asn_DEF_RSAPrivateKey, &asn_rsa_private_key, &buffer[0], buffer.size());
+            OCTET_STRING_fromBuf(&asn_private_key_info.privateKey, (const char*)buffer.data(), asn_rc.encoded);
+
+            asn_rc = der_encode_to_buffer(&asn_DEF_PrivateKeyInfo, &asn_private_key_info, &buffer[0], buffer.size());
+
+            result.reset(new RSAPrivateKey(
+                buffer.data(), asn_rc.encoded, rsa->ver,
+                key_n, key_pub_e, key_pri_e, key_prime1, key_prime2, key_exponent1, key_exponent2, key_coefficient
+            ));
+
+            ASN_STRUCT_FREE_CONTENTS_ONLY(asn_DEF_PrivateKeyInfo, &asn_private_key_info);
+
+            return result;
+        }
+        std::unique_ptr<jcp::AsymKey> MbedcryptoKeyUtils::makeRsaToPublicKey(mbedtls_rsa_context *rsa) {
+            mbedtls_pk_context pk;
+            int rc;
+            std::vector<unsigned char> buffer;
+            MpiWrappedBigInteger key_n;
+            MpiWrappedBigInteger key_pub_e;
+
+            mbedtls_pk_init(&pk);
+            mbedtls_pk_setup(&pk, mbedtls_pk_info_from_type(MBEDTLS_PK_RSA));
+            mbedtls_rsa_copy(mbedtls_pk_rsa(pk), rsa);
+            mbedtls_rsa_export(rsa, key_n.mpi(), NULL, NULL, NULL, key_pub_e.mpi());
+
+            buffer.resize(1024);
+            rc = mbedtls_pk_write_pubkey_der(&pk, &buffer[0], buffer.size());
+            if(rc > 0) {
+                const unsigned char *begin = buffer.data() + buffer.size() - rc;
+                return std::make_unique<RSAPublicKey>(begin, rc, key_n, key_pub_e);
+            }
+
+            return nullptr;
         }
     }
 }

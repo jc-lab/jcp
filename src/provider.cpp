@@ -16,6 +16,7 @@
 #include <jcp/secret_key_factory.hpp>
 #include <jcp/secret_key_factory_algo.hpp>
 #include <jcp/key_factory_algo.hpp>
+#include <jcp/key_pair_algo.hpp>
 
 namespace jcp {
 
@@ -74,6 +75,14 @@ namespace jcp {
     void Provider::addKeyFactoryAlgorithm(uint32_t algo_id, const char *name, std::unique_ptr<KeyFactoryFactory> factory)
     {
         kf_algos_.emplace((void*)algo_id, AlgorithmItem<KeyFactoryFactory>(algo_id, name, factory));
+    }
+    void Provider::addKeyPairGeneratorAlgorithm(const KeyPairAlgorithm *algorithm, std::unique_ptr<KeyPairGeneratorFactory> factory)
+    {
+        kpg_algos_.emplace((void*)algorithm, AlgorithmItem<KeyPairGeneratorFactory>(algorithm, factory));
+    }
+    void Provider::addKeyPairGeneratorAlgorithm(uint32_t algo_id, const char *name, std::unique_ptr<KeyPairGeneratorFactory> factory)
+    {
+        kpg_algos_.emplace((void*)algo_id, AlgorithmItem<KeyPairGeneratorFactory>(algo_id, name, factory));
     }
     void Provider::setSecureRandomFactory(std::unique_ptr<jcp::SecureRandomFactory> factory)
     {
@@ -217,6 +226,23 @@ namespace jcp {
     }
     KeyFactoryFactory *Provider::getKeyFactoryFactory(const char *name) {
         for(std::map<void*, AlgorithmItem<KeyFactoryFactory> >::const_iterator iter = kf_algos_.cbegin(); iter != kf_algos_.cend(); iter++) {
+            if(compareText(iter->second.name().c_str(), name)) {
+                return iter->second.factory.get();
+            }
+        }
+        return NULL;
+    }
+
+    KeyPairGeneratorFactory *Provider::getKeyPairGenerator(uint32_t algo_id) {
+        for (std::map<void*, AlgorithmItem<KeyPairGeneratorFactory> >::const_iterator iter = kpg_algos_.cbegin(); iter != kpg_algos_.cend(); iter++) {
+            if (iter->second.algo_id() == algo_id) {
+                return iter->second.factory.get();
+            }
+        }
+        return NULL;
+    }
+    KeyPairGeneratorFactory *Provider::getKeyPairGenerator(const char *name) {
+        for(std::map<void*, AlgorithmItem<KeyPairGeneratorFactory> >::const_iterator iter = kpg_algos_.cbegin(); iter != kpg_algos_.cend(); iter++) {
             if(compareText(iter->second.name().c_str(), name)) {
                 return iter->second.factory.get();
             }

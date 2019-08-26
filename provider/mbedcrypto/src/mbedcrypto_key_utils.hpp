@@ -18,6 +18,8 @@ namespace jcp {
     namespace mbedcrypto {
         class MbedcryptoKeyUtils : public KeyUtils {
         public:
+            class MpiWrappedBigInteger;
+
             MbedcryptoKeyUtils(Provider *provider) : KeyUtils(provider) {}
 
             jcp::Result<std::unique_ptr<AsymKey>> decodePkcs8PrivateKey(const unsigned char *der, int der_length) const override;
@@ -32,6 +34,9 @@ namespace jcp {
                 return setECKeyToPK(&ekp->grp, &ekp->d, &ekp->Q, key);
             }
             static bool loadECGroupByOid(mbedtls_ecp_group *grp, const asn1::ASN1ObjectIdentifier& oid);
+
+            static std::unique_ptr<jcp::AsymKey> makeRsaToPrivateKey(mbedtls_rsa_context *rsa);
+            static std::unique_ptr<jcp::AsymKey> makeRsaToPublicKey(mbedtls_rsa_context *rsa);
         };
     }
 }

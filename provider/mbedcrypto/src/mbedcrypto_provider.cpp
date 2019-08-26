@@ -17,6 +17,7 @@
 #include "jcp/signature_algo.hpp"
 #include "jcp/secret_key_factory_algo.hpp"
 #include "jcp/key_factory_algo.hpp"
+#include "jcp/key_pair_algo.hpp"
 
 #include "mbedcrypto_securerandom.hpp"
 #include "mbedcrypto_cipher_sym.hpp"
@@ -26,6 +27,7 @@
 #include "mbedcrypto_sign.hpp"
 #include "mbedcrypto_key_utils.hpp"
 #include "mbedcrypto_key_factory.hpp"
+#include "mbedcrypto_key_pair_generator.hpp"
 
 #include <jcp/soft/soft_pbkdf2_skf.hpp>
 #include <jcp/soft/soft_hkdf_skf.hpp>
@@ -40,8 +42,8 @@ namespace jcp {
 
     MbedcryptoProvider::MbedcryptoProvider()
     {
-		setSecureRandomFactory(std::unique_ptr<SecureRandomFactory>(new mbedcrypto::MbedcryptoSecureRandomFactory(this)));
-		setKeyUtils(std::unique_ptr<KeyUtils>(new mbedcrypto::MbedcryptoKeyUtils(this)));
+		setSecureRandomFactory(std::make_unique<mbedcrypto::MbedcryptoSecureRandomFactory>(this));
+		setKeyUtils(std::make_unique<mbedcrypto::MbedcryptoKeyUtils>(this));
 
 		addCipherAlgorithm(&CipherAlgorithm::AesEcbNoPadding, std::unique_ptr<mbedcrypto::MbedcryptoSymCipherFactory>(new mbedcrypto::MbedcryptoSymCipherFactory(this, true, {
 			{128, MBEDTLS_CIPHER_AES_128_ECB},
@@ -59,84 +61,7 @@ namespace jcp {
 			{256, MBEDTLS_CIPHER_AES_256_GCM}
 			})));
 
-		addCipherAlgorithm(&CipherAlgorithm::RsaEcbOaepPadding, std::unique_ptr<mbedcrypto::MbedcryptoAsymCipherFactory>(new mbedcrypto::MbedcryptoAsymCipherFactory(this, MBEDTLS_PK_RSA, MBEDTLS_RSA_PKCS_V21)));
-
-#if 0
-		   MBEDTLS_CIPHER_NONE = 0,             /**< Placeholder to mark the end of cipher-pair lists. */
-		MBEDTLS_CIPHER_NULL,                 /**< The identity stream cipher. */
-			MBEDTLS_CIPHER_AES_128_ECB,          /**< AES cipher with 128-bit ECB mode. */
-			MBEDTLS_CIPHER_AES_192_ECB,          /**< AES cipher with 192-bit ECB mode. */
-			MBEDTLS_CIPHER_AES_256_ECB,          /**< AES cipher with 256-bit ECB mode. */
-			MBEDTLS_CIPHER_AES_128_CBC,          /**< AES cipher with 128-bit CBC mode. */
-			MBEDTLS_CIPHER_AES_192_CBC,          /**< AES cipher with 192-bit CBC mode. */
-			MBEDTLS_CIPHER_AES_256_CBC,          /**< AES cipher with 256-bit CBC mode. */
-			MBEDTLS_CIPHER_AES_128_CFB128,       /**< AES cipher with 128-bit CFB128 mode. */
-			MBEDTLS_CIPHER_AES_192_CFB128,       /**< AES cipher with 192-bit CFB128 mode. */
-			MBEDTLS_CIPHER_AES_256_CFB128,       /**< AES cipher with 256-bit CFB128 mode. */
-			MBEDTLS_CIPHER_AES_128_CTR,          /**< AES cipher with 128-bit CTR mode. */
-			MBEDTLS_CIPHER_AES_192_CTR,          /**< AES cipher with 192-bit CTR mode. */
-			MBEDTLS_CIPHER_AES_256_CTR,          /**< AES cipher with 256-bit CTR mode. */
-			MBEDTLS_CIPHER_AES_128_GCM,          /**< AES cipher with 128-bit GCM mode. */
-			MBEDTLS_CIPHER_AES_192_GCM,          /**< AES cipher with 192-bit GCM mode. */
-			MBEDTLS_CIPHER_AES_256_GCM,          /**< AES cipher with 256-bit GCM mode. */
-			MBEDTLS_CIPHER_CAMELLIA_128_ECB,     /**< Camellia cipher with 128-bit ECB mode. */
-			MBEDTLS_CIPHER_CAMELLIA_192_ECB,     /**< Camellia cipher with 192-bit ECB mode. */
-			MBEDTLS_CIPHER_CAMELLIA_256_ECB,     /**< Camellia cipher with 256-bit ECB mode. */
-			MBEDTLS_CIPHER_CAMELLIA_128_CBC,     /**< Camellia cipher with 128-bit CBC mode. */
-			MBEDTLS_CIPHER_CAMELLIA_192_CBC,     /**< Camellia cipher with 192-bit CBC mode. */
-			MBEDTLS_CIPHER_CAMELLIA_256_CBC,     /**< Camellia cipher with 256-bit CBC mode. */
-			MBEDTLS_CIPHER_CAMELLIA_128_CFB128,  /**< Camellia cipher with 128-bit CFB128 mode. */
-			MBEDTLS_CIPHER_CAMELLIA_192_CFB128,  /**< Camellia cipher with 192-bit CFB128 mode. */
-			MBEDTLS_CIPHER_CAMELLIA_256_CFB128,  /**< Camellia cipher with 256-bit CFB128 mode. */
-			MBEDTLS_CIPHER_CAMELLIA_128_CTR,     /**< Camellia cipher with 128-bit CTR mode. */
-			MBEDTLS_CIPHER_CAMELLIA_192_CTR,     /**< Camellia cipher with 192-bit CTR mode. */
-			MBEDTLS_CIPHER_CAMELLIA_256_CTR,     /**< Camellia cipher with 256-bit CTR mode. */
-			MBEDTLS_CIPHER_CAMELLIA_128_GCM,     /**< Camellia cipher with 128-bit GCM mode. */
-			MBEDTLS_CIPHER_CAMELLIA_192_GCM,     /**< Camellia cipher with 192-bit GCM mode. */
-			MBEDTLS_CIPHER_CAMELLIA_256_GCM,     /**< Camellia cipher with 256-bit GCM mode. */
-			MBEDTLS_CIPHER_DES_ECB,              /**< DES cipher with ECB mode. */
-			MBEDTLS_CIPHER_DES_CBC,              /**< DES cipher with CBC mode. */
-			MBEDTLS_CIPHER_DES_EDE_ECB,          /**< DES cipher with EDE ECB mode. */
-			MBEDTLS_CIPHER_DES_EDE_CBC,          /**< DES cipher with EDE CBC mode. */
-			MBEDTLS_CIPHER_DES_EDE3_ECB,         /**< DES cipher with EDE3 ECB mode. */
-			MBEDTLS_CIPHER_DES_EDE3_CBC,         /**< DES cipher with EDE3 CBC mode. */
-			MBEDTLS_CIPHER_BLOWFISH_ECB,         /**< Blowfish cipher with ECB mode. */
-			MBEDTLS_CIPHER_BLOWFISH_CBC,         /**< Blowfish cipher with CBC mode. */
-			MBEDTLS_CIPHER_BLOWFISH_CFB64,       /**< Blowfish cipher with CFB64 mode. */
-			MBEDTLS_CIPHER_BLOWFISH_CTR,         /**< Blowfish cipher with CTR mode. */
-			MBEDTLS_CIPHER_ARC4_128,             /**< RC4 cipher with 128-bit mode. */
-			MBEDTLS_CIPHER_AES_128_CCM,          /**< AES cipher with 128-bit CCM mode. */
-			MBEDTLS_CIPHER_AES_192_CCM,          /**< AES cipher with 192-bit CCM mode. */
-			MBEDTLS_CIPHER_AES_256_CCM,          /**< AES cipher with 256-bit CCM mode. */
-			MBEDTLS_CIPHER_CAMELLIA_128_CCM,     /**< Camellia cipher with 128-bit CCM mode. */
-			MBEDTLS_CIPHER_CAMELLIA_192_CCM,     /**< Camellia cipher with 192-bit CCM mode. */
-			MBEDTLS_CIPHER_CAMELLIA_256_CCM,     /**< Camellia cipher with 256-bit CCM mode. */
-			MBEDTLS_CIPHER_ARIA_128_ECB,         /**< Aria cipher with 128-bit key and ECB mode. */
-			MBEDTLS_CIPHER_ARIA_192_ECB,         /**< Aria cipher with 192-bit key and ECB mode. */
-			MBEDTLS_CIPHER_ARIA_256_ECB,         /**< Aria cipher with 256-bit key and ECB mode. */
-			MBEDTLS_CIPHER_ARIA_128_CBC,         /**< Aria cipher with 128-bit key and CBC mode. */
-			MBEDTLS_CIPHER_ARIA_192_CBC,         /**< Aria cipher with 192-bit key and CBC mode. */
-			MBEDTLS_CIPHER_ARIA_256_CBC,         /**< Aria cipher with 256-bit key and CBC mode. */
-			MBEDTLS_CIPHER_ARIA_128_CFB128,      /**< Aria cipher with 128-bit key and CFB-128 mode. */
-			MBEDTLS_CIPHER_ARIA_192_CFB128,      /**< Aria cipher with 192-bit key and CFB-128 mode. */
-			MBEDTLS_CIPHER_ARIA_256_CFB128,      /**< Aria cipher with 256-bit key and CFB-128 mode. */
-			MBEDTLS_CIPHER_ARIA_128_CTR,         /**< Aria cipher with 128-bit key and CTR mode. */
-			MBEDTLS_CIPHER_ARIA_192_CTR,         /**< Aria cipher with 192-bit key and CTR mode. */
-			MBEDTLS_CIPHER_ARIA_256_CTR,         /**< Aria cipher with 256-bit key and CTR mode. */
-			MBEDTLS_CIPHER_ARIA_128_GCM,         /**< Aria cipher with 128-bit key and GCM mode. */
-			MBEDTLS_CIPHER_ARIA_192_GCM,         /**< Aria cipher with 192-bit key and GCM mode. */
-			MBEDTLS_CIPHER_ARIA_256_GCM,         /**< Aria cipher with 256-bit key and GCM mode. */
-			MBEDTLS_CIPHER_ARIA_128_CCM,         /**< Aria cipher with 128-bit key and CCM mode. */
-			MBEDTLS_CIPHER_ARIA_192_CCM,         /**< Aria cipher with 192-bit key and CCM mode. */
-			MBEDTLS_CIPHER_ARIA_256_CCM,         /**< Aria cipher with 256-bit key and CCM mode. */
-			MBEDTLS_CIPHER_AES_128_OFB,          /**< AES 128-bit cipher in OFB mode. */
-			MBEDTLS_CIPHER_AES_192_OFB,          /**< AES 192-bit cipher in OFB mode. */
-			MBEDTLS_CIPHER_AES_256_OFB,          /**< AES 256-bit cipher in OFB mode. */
-			MBEDTLS_CIPHER_AES_128_XTS,          /**< AES 128-bit cipher in XTS block mode. */
-			MBEDTLS_CIPHER_AES_256_XTS,          /**< AES 256-bit cipher in XTS block mode. */
-			MBEDTLS_CIPHER_CHACHA20,             /**< ChaCha20 stream cipher. */
-			MBEDTLS_CIPHER_CHACHA20_POLY1305,    /**< ChaCha20-Poly1305 AEAD cipher. */
-#endif
+		addCipherAlgorithm(&CipherAlgorithm::RsaEcbOaepPadding, std::make_unique<mbedcrypto::MbedcryptoAsymCipherFactory>(this, MBEDTLS_PK_RSA, MBEDTLS_RSA_PKCS_V21));
 
 		mbedcrypto::MbedcryptoMessageDigestFactory* sha1Factory = new mbedcrypto::MbedcryptoMessageDigestFactory(this, MBEDTLS_MD_SHA1);
         addMessageDigestAlgorithm(&MessageDigestAlgorithm::SHA_1, std::unique_ptr<mbedcrypto::MbedcryptoMessageDigestFactory>(sha1Factory));
@@ -160,35 +85,37 @@ namespace jcp {
         mbedcrypto::MbedcryptoMacFactory *hmacSha512Factory = new mbedcrypto::MbedcryptoMacFactory(this, MBEDTLS_MD_SHA512);
         addMacAlgorithm(&MacAlgorithm::HmacSHA512, std::unique_ptr<mbedcrypto::MbedcryptoMacFactory>(hmacSha512Factory));
 
-		addKeyAgreementAlgorithm(&KeyAgreementAlgorithm::ECDH, std::unique_ptr<mbedcrypto::MbedcryptoKaEcdhFactory>(new mbedcrypto::MbedcryptoKaEcdhFactory(this)));
+		addKeyAgreementAlgorithm(&KeyAgreementAlgorithm::ECDH, std::make_unique<mbedcrypto::MbedcryptoKaEcdhFactory>(this));
 
-        addSignatureAlgorithm(&SignatureAlgorithm::NONEwithECDSA, std::unique_ptr<mbedcrypto::MbedcryptoSignFactory>(new mbedcrypto::MbedcryptoSignFactory(this, MBEDTLS_PK_ECDSA, MBEDTLS_MD_NONE, NULL)));
-        addSignatureAlgorithm(&SignatureAlgorithm::SHA1withECDSA, std::unique_ptr<mbedcrypto::MbedcryptoSignFactory>(new mbedcrypto::MbedcryptoSignFactory(this, MBEDTLS_PK_ECDSA, MBEDTLS_MD_SHA1, sha1Factory)));
-        addSignatureAlgorithm(&SignatureAlgorithm::SHA224withECDSA, std::unique_ptr<mbedcrypto::MbedcryptoSignFactory>(new mbedcrypto::MbedcryptoSignFactory(this, MBEDTLS_PK_ECDSA, MBEDTLS_MD_SHA224, sha224Factory)));
-        addSignatureAlgorithm(&SignatureAlgorithm::SHA256withECDSA, std::unique_ptr<mbedcrypto::MbedcryptoSignFactory>(new mbedcrypto::MbedcryptoSignFactory(this, MBEDTLS_PK_ECDSA, MBEDTLS_MD_SHA256, sha256Factory)));
-        addSignatureAlgorithm(&SignatureAlgorithm::SHA384withECDSA, std::unique_ptr<mbedcrypto::MbedcryptoSignFactory>(new mbedcrypto::MbedcryptoSignFactory(this, MBEDTLS_PK_ECDSA, MBEDTLS_MD_SHA384, sha384Factory)));
-        addSignatureAlgorithm(&SignatureAlgorithm::SHA512withECDSA, std::unique_ptr<mbedcrypto::MbedcryptoSignFactory>(new mbedcrypto::MbedcryptoSignFactory(this, MBEDTLS_PK_ECDSA, MBEDTLS_MD_SHA512, sha512Factory)));
+        addSignatureAlgorithm(&SignatureAlgorithm::NONEwithECDSA, std::make_unique<mbedcrypto::MbedcryptoSignFactory>(this, MBEDTLS_PK_ECDSA, MBEDTLS_MD_NONE, nullptr));
+        addSignatureAlgorithm(&SignatureAlgorithm::SHA1withECDSA, std::make_unique<mbedcrypto::MbedcryptoSignFactory>(this, MBEDTLS_PK_ECDSA, MBEDTLS_MD_SHA1, sha1Factory));
+        addSignatureAlgorithm(&SignatureAlgorithm::SHA224withECDSA, std::make_unique<mbedcrypto::MbedcryptoSignFactory>(this, MBEDTLS_PK_ECDSA, MBEDTLS_MD_SHA224, sha224Factory));
+        addSignatureAlgorithm(&SignatureAlgorithm::SHA256withECDSA, std::make_unique<mbedcrypto::MbedcryptoSignFactory>(this, MBEDTLS_PK_ECDSA, MBEDTLS_MD_SHA256, sha256Factory));
+        addSignatureAlgorithm(&SignatureAlgorithm::SHA384withECDSA, std::make_unique<mbedcrypto::MbedcryptoSignFactory>(this, MBEDTLS_PK_ECDSA, MBEDTLS_MD_SHA384, sha384Factory));
+        addSignatureAlgorithm(&SignatureAlgorithm::SHA512withECDSA, std::make_unique<mbedcrypto::MbedcryptoSignFactory>(this, MBEDTLS_PK_ECDSA, MBEDTLS_MD_SHA512, sha512Factory));
 
-		addSignatureAlgorithm(&SignatureAlgorithm::NONEwithRSA, std::unique_ptr<mbedcrypto::MbedcryptoSignFactory>(new mbedcrypto::MbedcryptoSignFactory(this, MBEDTLS_PK_RSA, MBEDTLS_MD_NONE, NULL)));
-		addSignatureAlgorithm(&SignatureAlgorithm::SHA1withECDSA, std::unique_ptr<mbedcrypto::MbedcryptoSignFactory>(new mbedcrypto::MbedcryptoSignFactory(this, MBEDTLS_PK_RSA, MBEDTLS_MD_SHA1, sha1Factory)));
-		addSignatureAlgorithm(&SignatureAlgorithm::SHA224withECDSA, std::unique_ptr<mbedcrypto::MbedcryptoSignFactory>(new mbedcrypto::MbedcryptoSignFactory(this, MBEDTLS_PK_RSA, MBEDTLS_MD_SHA224, sha224Factory)));
-		addSignatureAlgorithm(&SignatureAlgorithm::SHA256withECDSA, std::unique_ptr<mbedcrypto::MbedcryptoSignFactory>(new mbedcrypto::MbedcryptoSignFactory(this, MBEDTLS_PK_RSA, MBEDTLS_MD_SHA256, sha256Factory)));
-		addSignatureAlgorithm(&SignatureAlgorithm::SHA384withECDSA, std::unique_ptr<mbedcrypto::MbedcryptoSignFactory>(new mbedcrypto::MbedcryptoSignFactory(this, MBEDTLS_PK_RSA, MBEDTLS_MD_SHA384, sha384Factory)));
-		addSignatureAlgorithm(&SignatureAlgorithm::SHA512withECDSA, std::unique_ptr<mbedcrypto::MbedcryptoSignFactory>(new mbedcrypto::MbedcryptoSignFactory(this, MBEDTLS_PK_RSA, MBEDTLS_MD_SHA512, sha512Factory)));
+		addSignatureAlgorithm(&SignatureAlgorithm::NONEwithRSA, std::make_unique<mbedcrypto::MbedcryptoSignFactory>(this, MBEDTLS_PK_RSA, MBEDTLS_MD_NONE, nullptr));
+		addSignatureAlgorithm(&SignatureAlgorithm::SHA1withECDSA, std::make_unique<mbedcrypto::MbedcryptoSignFactory>(this, MBEDTLS_PK_RSA, MBEDTLS_MD_SHA1, sha1Factory));
+		addSignatureAlgorithm(&SignatureAlgorithm::SHA224withECDSA, std::make_unique<mbedcrypto::MbedcryptoSignFactory>(this, MBEDTLS_PK_RSA, MBEDTLS_MD_SHA224, sha224Factory));
+		addSignatureAlgorithm(&SignatureAlgorithm::SHA256withECDSA, std::make_unique<mbedcrypto::MbedcryptoSignFactory>(this, MBEDTLS_PK_RSA, MBEDTLS_MD_SHA256, sha256Factory));
+		addSignatureAlgorithm(&SignatureAlgorithm::SHA384withECDSA, std::make_unique<mbedcrypto::MbedcryptoSignFactory>(this, MBEDTLS_PK_RSA, MBEDTLS_MD_SHA384, sha384Factory));
+		addSignatureAlgorithm(&SignatureAlgorithm::SHA512withECDSA, std::make_unique<mbedcrypto::MbedcryptoSignFactory>(this, MBEDTLS_PK_RSA, MBEDTLS_MD_SHA512, sha512Factory));
 
-        addSecretKeyFactoryAlgorithm(&SecretKeyFactoryAlgorithm::PBKDF2WithHmacSHA1, std::unique_ptr<soft::SoftPBKDF2SecretKeyFactory>(new soft::SoftPBKDF2SecretKeyFactory(this, hmacSha1Factory)));
-        addSecretKeyFactoryAlgorithm(&SecretKeyFactoryAlgorithm::PBKDF2WithHmacSHA224, std::unique_ptr<soft::SoftPBKDF2SecretKeyFactory>(new soft::SoftPBKDF2SecretKeyFactory(this, hmacSha224Factory)));
-        addSecretKeyFactoryAlgorithm(&SecretKeyFactoryAlgorithm::PBKDF2WithHmacSHA256, std::unique_ptr<soft::SoftPBKDF2SecretKeyFactory>(new soft::SoftPBKDF2SecretKeyFactory(this, hmacSha256Factory)));
-        addSecretKeyFactoryAlgorithm(&SecretKeyFactoryAlgorithm::PBKDF2WithHmacSHA384, std::unique_ptr<soft::SoftPBKDF2SecretKeyFactory>(new soft::SoftPBKDF2SecretKeyFactory(this, hmacSha384Factory)));
-        addSecretKeyFactoryAlgorithm(&SecretKeyFactoryAlgorithm::PBKDF2WithHmacSHA512, std::unique_ptr<soft::SoftPBKDF2SecretKeyFactory>(new soft::SoftPBKDF2SecretKeyFactory(this, hmacSha512Factory)));
-        addSecretKeyFactoryAlgorithm(&SecretKeyFactoryAlgorithm::HKDFWithSHA1, std::unique_ptr<soft::SoftHKDFSecretKeyFactory>(new soft::SoftHKDFSecretKeyFactory(this, hmacSha1Factory)));
-        addSecretKeyFactoryAlgorithm(&SecretKeyFactoryAlgorithm::HKDFWithSHA224, std::unique_ptr<soft::SoftHKDFSecretKeyFactory>(new soft::SoftHKDFSecretKeyFactory(this, hmacSha224Factory)));
-        addSecretKeyFactoryAlgorithm(&SecretKeyFactoryAlgorithm::HKDFWithSHA256, std::unique_ptr<soft::SoftHKDFSecretKeyFactory>(new soft::SoftHKDFSecretKeyFactory(this, hmacSha256Factory)));
-        addSecretKeyFactoryAlgorithm(&SecretKeyFactoryAlgorithm::HKDFWithSHA384, std::unique_ptr<soft::SoftHKDFSecretKeyFactory>(new soft::SoftHKDFSecretKeyFactory(this, hmacSha384Factory)));
-        addSecretKeyFactoryAlgorithm(&SecretKeyFactoryAlgorithm::HKDFWithSHA512, std::unique_ptr<soft::SoftHKDFSecretKeyFactory>(new soft::SoftHKDFSecretKeyFactory(this, hmacSha512Factory)));
+        addSecretKeyFactoryAlgorithm(&SecretKeyFactoryAlgorithm::PBKDF2WithHmacSHA1, std::make_unique<soft::SoftPBKDF2SecretKeyFactory>(this, hmacSha1Factory));
+        addSecretKeyFactoryAlgorithm(&SecretKeyFactoryAlgorithm::PBKDF2WithHmacSHA224, std::make_unique<soft::SoftPBKDF2SecretKeyFactory>(this, hmacSha224Factory));
+        addSecretKeyFactoryAlgorithm(&SecretKeyFactoryAlgorithm::PBKDF2WithHmacSHA256, std::make_unique<soft::SoftPBKDF2SecretKeyFactory>(this, hmacSha256Factory));
+        addSecretKeyFactoryAlgorithm(&SecretKeyFactoryAlgorithm::PBKDF2WithHmacSHA384, std::make_unique<soft::SoftPBKDF2SecretKeyFactory>(this, hmacSha384Factory));
+        addSecretKeyFactoryAlgorithm(&SecretKeyFactoryAlgorithm::PBKDF2WithHmacSHA512, std::make_unique<soft::SoftPBKDF2SecretKeyFactory>(this, hmacSha512Factory));
+        addSecretKeyFactoryAlgorithm(&SecretKeyFactoryAlgorithm::HKDFWithSHA1, std::make_unique<soft::SoftHKDFSecretKeyFactory>(this, hmacSha1Factory));
+        addSecretKeyFactoryAlgorithm(&SecretKeyFactoryAlgorithm::HKDFWithSHA224, std::make_unique<soft::SoftHKDFSecretKeyFactory>(this, hmacSha224Factory));
+        addSecretKeyFactoryAlgorithm(&SecretKeyFactoryAlgorithm::HKDFWithSHA256, std::make_unique<soft::SoftHKDFSecretKeyFactory>(this, hmacSha256Factory));
+        addSecretKeyFactoryAlgorithm(&SecretKeyFactoryAlgorithm::HKDFWithSHA384, std::make_unique<soft::SoftHKDFSecretKeyFactory>(this, hmacSha384Factory));
+        addSecretKeyFactoryAlgorithm(&SecretKeyFactoryAlgorithm::HKDFWithSHA512, std::make_unique<soft::SoftHKDFSecretKeyFactory>(this, hmacSha512Factory));
 
-        addKeyFactoryAlgorithm(&KeyFactoryAlgorithm::Pkcs8PrivateKey, std::unique_ptr<mbedcrypto::MbedcryptoPKCS8KeyFactoryFactory>(new mbedcrypto::MbedcryptoPKCS8KeyFactoryFactory(this)));
-        addKeyFactoryAlgorithm(&KeyFactoryAlgorithm::X509PublicKey, std::unique_ptr<mbedcrypto::MbedcryptoPKCS8KeyFactoryFactory>(new mbedcrypto::MbedcryptoPKCS8KeyFactoryFactory(this)));
+        addKeyFactoryAlgorithm(&KeyFactoryAlgorithm::Pkcs8PrivateKey, std::make_unique<mbedcrypto::MbedcryptoPKCS8KeyFactoryFactory>(this));
+        addKeyFactoryAlgorithm(&KeyFactoryAlgorithm::X509PublicKey, std::make_unique<mbedcrypto::MbedcryptoPKCS8KeyFactoryFactory>(this));
+
+        addKeyPairGeneratorAlgorithm(&KeyPairAlgorithm::RSA, std::make_unique<mbedcrypto::MbedcryptoRSAKeyPairGeneratorFactory>(this));
     }
 
 } // namespace jcp

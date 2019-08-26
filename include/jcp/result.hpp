@@ -30,7 +30,7 @@ namespace jcp {
 
         template<typename... Args>
         ResultData(Args&& ... eargs)
-                : result_(eargs...)
+                : result_(std::forward<Args>(eargs)...)
         { }
 
         virtual ~ResultData() {}
@@ -57,7 +57,7 @@ namespace jcp {
 
         virtual ~ResultData() {}
 
-        std::unique_ptr<TResult>& result() {
+        const std::unique_ptr<TResult>& result() const {
             return result_;
         }
 
@@ -119,7 +119,7 @@ namespace jcp {
 
         template<typename... Args>
         ResultImpl(Args&& ... eargs)
-                : ResultData(eargs...)
+                : ResultData(std::forward<Args>(eargs)...)
         { }
 
         const std::exception* exception() const override {
@@ -193,9 +193,6 @@ namespace jcp {
         const TResult& operator*() const {
             return data_->result();
         }
-		TResult& ref() const {
-			return data_->result();
-		}
         const std::exception* exception() const {
             return data_->exception();
         }
@@ -289,11 +286,8 @@ namespace jcp {
         std::unique_ptr<ResultImpl<TResult, void>> result_;
 
     public:
-        ResultBuilder(TResult &value) : result_(new ResultImpl<TResult, void>(value)) {
-        }
-
         template<typename... RArgs>
-        ResultBuilder(RArgs... args) : result_(new ResultImpl<TResult, void>(args...)) {
+        ResultBuilder(RArgs&&... args) : result_(new ResultImpl<TResult, void>(std::forward<RArgs>(args)...)) {
         }
 
         Result<TResult> build() {
