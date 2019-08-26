@@ -14,10 +14,12 @@
 #include <jcp/ec_private_key.hpp>
 #include <jcp/rsa_private_key.hpp>
 
-
 #include <jcp/mbedcrypto_provider.hpp>
 #include <jcp/openssl_provider.hpp>
 #include <jcp/x509_encoded_key_spec.hpp>
+
+#include <jcp/key_pair_generator.hpp>
+#include <jcp/key_pair_algo.hpp>
 
 #if 1
 
@@ -25,6 +27,32 @@ int main() {
 	jcp::MbedcryptoProvider::registerTo(jcp::Security::getInstance());
 	jcp::OpensslProvider::registerTo(jcp::Security::getInstance());
 
+	if(1)
+    {
+	    // Key pair generator
+        std::unique_ptr<jcp::KeyPairGenerator> kpg = jcp::KeyPairGenerator::getInstance("RSA");
+        kpg->initialize(1024, nullptr);
+        jcp::Result<jcp::KeyPair> result_kp = kpg->genKeyPair();
+        if(result_kp) {
+            std::vector<unsigned char> priv_key = result_kp->getPrivateKey()->getEncoded();
+            std::vector<unsigned char> pub_key  = result_kp->getPublicKey()->getEncoded();
+            std::cout << "Success key pair generator" << std::endl;
+
+            printf("Private Key (%s) : ", result_kp->getPublicKey()->getFormat().c_str());
+            for(int i=0; i<priv_key.size();i++) {
+                printf("%02x ", priv_key[i]);
+            }
+            printf("\n");
+            printf("Public Key (%s) : ", result_kp->getPublicKey()->getFormat().c_str());
+            for(int i=0; i<pub_key.size();i++) {
+                printf("%02x ", priv_key[i]);
+            }
+            printf("\n");
+        }else{
+            std::cout << "Failed key pair generator" << std::endl;
+        }
+    }
+	if(0)
     {
         unsigned char temp_1[] =
             {0x30, 0x81, 0x87, 0x02, 0x01, 0x00, 0x30, 0x13, 0x06, 0x07, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x02, 0x01, 0x06, 0x08, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x03, 0x01, 0x07, 0x04, 0x6d, 0x30, 0x6b, 0x02, 0x01, 0x01, 0x04, 0x20, 0xa8, 0x2d, 0xe2, 0x54, 0xd8, 0xbb, 0x96, 0x07, 0xbe, 0x6f, 0x98, 0x28, 0x0e, 0x62, 0xe7, 0xa7, 0xaa, 0x32, 0x09, 0xb0, 0xd5, 0xa2, 0x75, 0xca, 0xca, 0xff, 0x61, 0x95, 0xbc, 0x5e, 0x3b, 0xcf, 0xa1, 0x44, 0x03, 0x42, 0x00, 0x04, 0x92, 0x64, 0x11, 0x93, 0xe0, 0xa1, 0x8d, 0x41, 0xbd, 0xeb, 0x90, 0x46, 0xdf, 0xff, 0x2f, 0x5c, 0xee, 0x7d, 0xe5, 0xbb, 0x30, 0x11, 0xc6, 0x18, 0x08, 0x62, 0xe3, 0x73, 0x27, 0x02, 0x69, 0x37, 0x47, 0xf7, 0x98, 0x0c, 0xa4, 0x91, 0x97, 0xd5, 0x26, 0x18, 0x62, 0xca, 0x5a, 0xf2, 0x11, 0xd7, 0xe8, 0xd1, 0x27, 0x3a, 0xcc, 0xee, 0x81, 0xae, 0x60, 0x97, 0x59, 0x63, 0xcf, 0x5b, 0xbd, 0xe3};
@@ -47,8 +75,8 @@ int main() {
 
                 jcp::Result<std::unique_ptr<jcp::AsymKey>> private_key = keyFactory->generatePrivateKey(result->get());
                 jcp::Result<std::unique_ptr<jcp::AsymKey>> public_key = keyFactory->generatePublicKey(result->get());
-                std::cout << "private_key : " << private_key.get() << std::endl;
-                std::cout << "public_key : " << public_key.get() << std::endl;
+                std::cout << "private_key : " << private_key->get() << std::endl;
+                std::cout << "public_key : " << public_key->get() << std::endl;
             }
         }
         std::cout << " ___ " << std::endl;
@@ -66,8 +94,8 @@ int main() {
                 }
                 jcp::Result<std::unique_ptr<jcp::AsymKey>> private_key = keyFactory->generatePrivateKey(result->get());
                 jcp::Result<std::unique_ptr<jcp::AsymKey>> public_key = keyFactory->generatePublicKey(result->get());
-                std::cout << "private_key : " << private_key.get() << std::endl;
-                std::cout << "public_key : " << public_key.get() << std::endl;
+                std::cout << "private_key : " << private_key->get() << std::endl;
+                std::cout << "public_key : " << public_key->get() << std::endl;
             }
         }
     }
@@ -101,8 +129,8 @@ int main() {
 
                 jcp::Result<std::unique_ptr<jcp::AsymKey>> private_key = keyFactory->generatePrivateKey(result->get());
                 jcp::Result<std::unique_ptr<jcp::AsymKey>> public_key = keyFactory->generatePublicKey(result->get());
-				std::cout << "private_key : " << private_key.get() << std::endl;
-				std::cout << "public_key : " << public_key.get() << std::endl;
+				std::cout << "private_key : " << private_key->get() << std::endl;
+				std::cout << "public_key : " << public_key->get() << std::endl;
 			}
 		}
 		std::cout << " ___ " << std::endl;
@@ -120,8 +148,8 @@ int main() {
 				}
                 jcp::Result<std::unique_ptr<jcp::AsymKey>> private_key = keyFactory->generatePrivateKey(result->get());
                 jcp::Result<std::unique_ptr<jcp::AsymKey>> public_key = keyFactory->generatePublicKey(result->get());
-				std::cout << "private_key : " << private_key.get() << std::endl;
-				std::cout << "public_key : " << public_key.get() << std::endl;
+				std::cout << "private_key : " << private_key->get() << std::endl;
+				std::cout << "public_key : " << public_key->get() << std::endl;
 			}
 		}
 	}
@@ -148,10 +176,10 @@ int main() {
 				std::cout << "key : " << key->getFormat() << std::endl;
 				std::cout << "key : " << key->getAlgorithm() << std::endl;
 
-				std::unique_ptr<jcp::AsymKey> private_key = keyFactory->generatePrivateKey(result->get());
-				std::unique_ptr<jcp::AsymKey> public_key = keyFactory->generatePublicKey(result->get());
-				std::cout << "private_key : " << private_key.get() << std::endl;
-				std::cout << "public_key : " << public_key.get() << std::endl;
+				jcp::Result<std::unique_ptr<jcp::AsymKey>> private_key = keyFactory->generatePrivateKey(result->get());
+				jcp::Result<std::unique_ptr<jcp::AsymKey>> public_key = keyFactory->generatePublicKey(result->get());
+				std::cout << "private_key : " << private_key->get() << std::endl;
+				std::cout << "public_key : " << public_key->get() << std::endl;
 			}
 		}
 
@@ -211,8 +239,8 @@ int main() {
 
                 jcp::Result<std::unique_ptr<jcp::AsymKey>> private_key = keyFactory->generatePrivateKey(result->get());
                 jcp::Result<std::unique_ptr<jcp::AsymKey>> public_key = keyFactory->generatePublicKey(result->get());
-				std::cout << "private_key : " << private_key.get() << std::endl;
-				std::cout << "public_key : " << public_key.get() << std::endl;
+				std::cout << "private_key : " << private_key->get() << std::endl;
+				std::cout << "public_key : " << public_key->get() << std::endl;
 			}
 		}
     }
