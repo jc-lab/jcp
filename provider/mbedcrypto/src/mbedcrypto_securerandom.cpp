@@ -18,18 +18,22 @@ namespace jcp {
         class MbedcryptoSecureRandom : public SecureRandom {
         private:
             mbedtls_ctr_drbg_context ctr_drbg_;
+            mbedtls_entropy_context entropy_;
 
         public:
             MbedcryptoSecureRandom(Provider *provider)
                 : SecureRandom(provider)
             {
                 int rc;
-                mbedtls_entropy_context entropy;
                 mbedtls_ctr_drbg_init(&ctr_drbg_);
-                mbedtls_entropy_init(&entropy);
-                rc = mbedtls_ctr_drbg_seed(&ctr_drbg_, mbedtls_entropy_func, &entropy,
+                mbedtls_entropy_init(&entropy_);
+                rc = mbedtls_ctr_drbg_seed(&ctr_drbg_, mbedtls_entropy_func, &entropy_,
                                              (const unsigned char *) "jcp", 3);
-                mbedtls_entropy_free(&entropy);
+            }
+
+            ~MbedcryptoSecureRandom() {
+                mbedtls_ctr_drbg_free(&ctr_drbg_);
+                mbedtls_entropy_free(&entropy_);
             }
 
             int32_t next(int bits) override {
