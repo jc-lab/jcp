@@ -39,6 +39,10 @@ namespace jcp {
             return result_;
         }
 
+        TResult& ref() {
+            return result_;
+        }
+
         virtual const std::exception* exception() const = 0;
         virtual std::unique_ptr<std::exception> move_exception() = 0;
     };
@@ -201,6 +205,10 @@ namespace jcp {
         }
         operator bool() const {
             return !exception();
+        }
+
+        TResult& ref() {
+            return data_->ref();
         }
     };
 
