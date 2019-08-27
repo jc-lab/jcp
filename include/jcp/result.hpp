@@ -65,6 +65,10 @@ namespace jcp {
             return result_;
         }
 
+		std::unique_ptr<TResult>& ref() {
+			return result_;
+		}
+
         virtual const std::exception* exception() const = 0;
         virtual std::unique_ptr<std::exception> move_exception() = 0;
     };
