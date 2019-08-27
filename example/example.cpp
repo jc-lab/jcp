@@ -27,9 +27,34 @@ int main() {
 	jcp::MbedcryptoProvider::registerTo(jcp::Security::getInstance());
 	jcp::OpensslProvider::registerTo(jcp::Security::getInstance());
 
-	if(1)
+    if(1)
     {
-	    // Key pair generator
+        // Key pair generator
+        std::unique_ptr<jcp::KeyPairGenerator> kpg = jcp::KeyPairGenerator::getInstance(jcp::KeyPairAlgorithm::EC_prime256v1.algo_id());
+        kpg->initialize(0, nullptr);
+        jcp::Result<jcp::KeyPair> result_kp = kpg->genKeyPair();
+        if(result_kp) {
+            std::vector<unsigned char> priv_key = result_kp->getPrivateKey()->getEncoded();
+            std::vector<unsigned char> pub_key  = result_kp->getPublicKey()->getEncoded();
+            std::cout << "Success key pair generator" << std::endl;
+
+            printf("Private Key (%s) : ", result_kp->getPrivateKey()->getFormat().c_str());
+            for(int i=0; i<priv_key.size();i++) {
+                printf("%02x ", priv_key[i]);
+            }
+            printf("\n");
+            printf("Public Key (%s) : ", result_kp->getPublicKey()->getFormat().c_str());
+            for(int i=0; i<pub_key.size();i++) {
+                printf("%02x ", pub_key[i]);
+            }
+            printf("\n");
+        }else{
+            std::cout << "Failed key pair generator" << std::endl;
+        }
+    }
+    if(0)
+    {
+        // Key pair generator
         std::unique_ptr<jcp::KeyPairGenerator> kpg = jcp::KeyPairGenerator::getInstance("RSA");
         kpg->initialize(1024, nullptr);
         jcp::Result<jcp::KeyPair> result_kp = kpg->genKeyPair();
@@ -38,7 +63,7 @@ int main() {
             std::vector<unsigned char> pub_key  = result_kp->getPublicKey()->getEncoded();
             std::cout << "Success key pair generator" << std::endl;
 
-            printf("Private Key (%s) : ", result_kp->getPublicKey()->getFormat().c_str());
+            printf("Private Key (%s) : ", result_kp->getPrivateKey()->getFormat().c_str());
             for(int i=0; i<priv_key.size();i++) {
                 printf("%02x ", priv_key[i]);
             }
@@ -102,7 +127,7 @@ int main() {
 
 	std::cout << " ----------------------- " << std::endl;
 
-#if 1
+#if 0
 	{
 
 		unsigned char temp_1[] =
