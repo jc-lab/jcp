@@ -32,7 +32,7 @@ namespace jcp {
         Provider *getProvider() const { return provider_; }
 
         virtual jcp::Result<void> init(const AsymKey *key, SecureRandom *secure_random = NULL) = 0;
-        virtual jcp::Result<SecretKey> doPhase(const AsymKey *key, SecureRandom *secure_random = NULL) = 0;
+        virtual jcp::Result<SecretKey> doPhase(const AsymKey *key) = 0;
         virtual jcp::Result<Buffer> generateSecret() = 0;
     };
 

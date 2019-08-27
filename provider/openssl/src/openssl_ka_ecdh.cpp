@@ -56,7 +56,7 @@ namespace jcp {
                 return jcp::Result<void>();
             }
 
-            jcp::Result<SecretKey> doPhase(const AsymKey *key, SecureRandom *secure_random) override {
+            jcp::Result<SecretKey> doPhase(const AsymKey *key) override {
 				int rc;
 				std::unique_ptr<EC_KEY, void(*)(EC_KEY*)> eckey(NULL, EC_KEY_free);
 				OpensslKeyUtils key_utils(getProvider());

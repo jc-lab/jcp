@@ -60,7 +60,7 @@ namespace jcp {
                 return jcp::Result<void>();
             }
 
-            jcp::Result<SecretKey> doPhase(const AsymKey *key, SecureRandom *secure_random) override {
+            jcp::Result<SecretKey> doPhase(const AsymKey *key) override {
 				int rc;
 				mbedtls_mpi z;
 
