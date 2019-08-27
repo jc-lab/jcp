@@ -30,13 +30,18 @@ namespace jcp {
 
         class MbedcryptoKeyUtils::MpiWrappedBigInteger : public BigInteger {
         public:
-            mbedtls_mpi mpi_;
+            mbedtls_mpi local_mpi_;
+            mbedtls_mpi *mpi_ptr_;
 
-            MpiWrappedBigInteger() {
-                mbedtls_mpi_init(&mpi_);
+            MpiWrappedBigInteger(mbedtls_mpi *mpi = NULL) {
+                mbedtls_mpi_init(&local_mpi_);
+                if(mpi)
+                    mpi_ptr_ = mpi;
+                else
+                    mpi_ptr_ = &local_mpi_;
             }
             ~MpiWrappedBigInteger() {
-                mbedtls_mpi_free(&mpi_);
+                mbedtls_mpi_free(&local_mpi_);
             }
 
             void copyFrom(const BigInteger &src) override {
@@ -46,23 +51,30 @@ namespace jcp {
             void copyTo(std::vector<unsigned char> &buffer) const override {
                 int rc;
                 buffer.resize(1024);
-                rc = mbedtls_mpi_write_binary(&mpi_, &buffer[0], buffer.size());
+                rc = mbedtls_mpi_write_binary(mpi_ptr_, &buffer[0], buffer.size());
                 if(rc > 0) {
                     buffer.resize(rc);
                 }
             }
             mbedtls_mpi *mpi() {
-                return &mpi_;
+                return mpi_ptr_;
             }
             void copyToAsn1Integer(INTEGER_t *container) {
                 int rc;
-                size_t len = mbedtls_mpi_size(&mpi_);
+                size_t len = mbedtls_mpi_size(mpi_ptr_);
                 container->size = 0;
                 container->buf = (uint8_t*)malloc(len);
-                rc = mbedtls_mpi_write_binary(&mpi_, container->buf, len);
+                rc = mbedtls_mpi_write_binary(mpi_ptr_, container->buf, len);
                 if(rc == 0) {
                     container->size = len;
                 }
+            }
+            void copyToAsn1OctetString(OCTET_STRING_t *container) {
+                int rc;
+                size_t len = mbedtls_mpi_size(mpi_ptr_);
+                std::vector<unsigned char> buf(len);
+                rc = mbedtls_mpi_write_binary(mpi_ptr_, &buf[0], buf.size());
+                OCTET_STRING_fromBuf(container, (const char*)&buf[0], buf.size());
             }
         };
 
@@ -116,6 +128,59 @@ namespace jcp {
                 mbedtls_ecp_group_load(grp, MBEDTLS_ECP_DP_BP512R1);
             }else{
                 return false;
+            }
+            return true;
+        }
+
+        bool MbedcryptoKeyUtils::setOidByECGroup(asn1::ASN1ObjectIdentifier &oid, const mbedtls_ecp_group *grp) {
+            switch(grp->id) {
+                case MBEDTLS_ECP_DP_SECP192K1:
+                    oid = asn1::sec::SECObjectIdentifiers::secp192k1;
+                    break;
+                case MBEDTLS_ECP_DP_SECP192R1:
+                    oid = asn1::sec::SECObjectIdentifiers::secp192r1;
+                    break;
+                case MBEDTLS_ECP_DP_SECP224K1:
+                    oid = asn1::sec::SECObjectIdentifiers::secp224k1;
+                    break;
+                case MBEDTLS_ECP_DP_SECP224R1:
+                    oid = asn1::sec::SECObjectIdentifiers::secp224r1;
+                    break;
+                case MBEDTLS_ECP_DP_SECP256K1:
+                    oid = asn1::sec::SECObjectIdentifiers::secp256k1;
+                    break;
+                case MBEDTLS_ECP_DP_SECP256R1:
+                    oid = asn1::sec::SECObjectIdentifiers::secp256r1;
+                    break;
+                case MBEDTLS_ECP_DP_SECP384R1:
+                    oid = asn1::sec::SECObjectIdentifiers::secp384r1;
+                    break;
+                case MBEDTLS_ECP_DP_SECP521R1:
+                    oid = asn1::sec::SECObjectIdentifiers::secp521r1;
+                    break;
+                //case MBEDTLS_ECP_DP_CURVE448:
+                //    oid = asn1::edec::EDECObjectIdentifiers::id_Ed448;
+                    break;
+                case MBEDTLS_ECP_DP_CURVE448:
+                    oid = asn1::edec::EDECObjectIdentifiers::id_X448;
+                    break;
+                //case MBEDTLS_ECP_DP_CURVE25519:
+                //    oid = asn1::edec::EDECObjectIdentifiers::id_Ed25519;
+                    break;
+                case MBEDTLS_ECP_DP_CURVE25519:
+                    oid = asn1::edec::EDECObjectIdentifiers::id_X25519;
+                    break;
+                case MBEDTLS_ECP_DP_BP256R1:
+                    oid = asn1::teletrust::TeleTrusTObjectIdentifiers::brainpoolP256r1;
+                    break;
+                case MBEDTLS_ECP_DP_BP384R1:
+                    oid = asn1::teletrust::TeleTrusTObjectIdentifiers::brainpoolP384r1;
+                    break;
+                case MBEDTLS_ECP_DP_BP512R1:
+                    oid = asn1::teletrust::TeleTrusTObjectIdentifiers::brainpoolP512r1;
+                    break;
+                default:
+                    return false;
             }
             return true;
         }
@@ -244,8 +309,6 @@ namespace jcp {
             MpiWrappedBigInteger key_exponent2;
             MpiWrappedBigInteger key_coefficient;
 
-            unsigned char dummy[1] = {0};
-
             mbedtls_rsa_export(rsa, key_n.mpi(), key_prime1.mpi(), key_prime2.mpi(), key_pri_e.mpi(), key_pub_e.mpi());
             mbedtls_rsa_export_crt(rsa, key_exponent1.mpi(), key_exponent2.mpi(), key_coefficient.mpi());
 
@@ -307,9 +370,112 @@ namespace jcp {
 
             buffer.resize(1024);
             rc = mbedtls_pk_write_pubkey_der(&pk, &buffer[0], buffer.size());
+            mbedtls_pk_free(&pk);
+
             if(rc > 0) {
                 const unsigned char *begin = buffer.data() + buffer.size() - rc;
                 return std::make_unique<RSAPublicKey>(begin, rc, key_n, key_pub_e);
+            }
+
+            return nullptr;
+        }
+
+        std::unique_ptr<jcp::AsymKey> MbedcryptoKeyUtils::makeEcpToPrivateKey(mbedtls_ecp_keypair *ecp) {
+            std::unique_ptr<jcp::AsymKey> result;
+            PrivateKeyInfo_t asn_private_key_info;
+            ECPrivateKey_t asn_ec_private_key;
+
+            std::vector<unsigned char> oid = asn1::x9::X9ObjectIdentifiers::id_ecPublicKey.getEncoded();
+
+            asn1::ASN1ObjectIdentifier algo_param_oid;
+            if(!setOidByECGroup(algo_param_oid, &ecp->grp)) {
+                return nullptr;
+            }
+
+            std::vector<unsigned char> buffer(4096);
+
+            asn_enc_rval_t asn_rc;
+            asn_dec_rval_t asn_dec_rc;
+
+            MpiWrappedBigInteger key_d(&ecp->d);
+
+            memset(&asn_private_key_info, 0, sizeof(asn_private_key_info));
+            memset(&asn_ec_private_key, 0, sizeof(asn_ec_private_key));
+            asn_private_key_info.version = 0;
+
+            {
+                OBJECT_IDENTIFIER_t *oid_ptr = &asn_private_key_info.privateKeyAlgorithm.algorithm;
+                asn_dec_rc = ber_decode_primitive(NULL,
+                                                  &asn_DEF_OBJECT_IDENTIFIER,
+                                                  (void **) &oid_ptr,
+                                                  oid.data(),
+                                                  oid.size(),
+                                                  0);
+            }
+            {
+                std::vector<unsigned char> temp_buf = algo_param_oid.getEncoded();
+                asn_dec_rc = ber_decode(NULL, &asn_DEF_ANY, (void**)&asn_private_key_info.privateKeyAlgorithm.parameters, temp_buf.data(), temp_buf.size());
+            }
+
+            asn_ec_private_key.version = 1;
+
+            key_d.copyToAsn1OctetString(&asn_ec_private_key.privateKey);
+
+            {
+                std::vector<unsigned char> temp(MBEDTLS_ECP_MAX_PT_LEN);
+                size_t olen = 0;
+                int rc = mbedtls_ecp_point_write_binary(&ecp->grp, &ecp->Q, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen, &temp[0], temp.size());
+                if(rc != 0) {
+                    return nullptr;
+                }
+
+                asn_ec_private_key.publicKey = (BIT_STRING_t*)OCTET_STRING_new_fromBuf(&asn_DEF_BIT_STRING, (const char*)temp.data(), olen);
+            }
+
+            asn_rc = der_encode_to_buffer(&asn_DEF_ECPrivateKey, &asn_ec_private_key, &buffer[0], buffer.size());
+            OCTET_STRING_fromBuf(&asn_private_key_info.privateKey, (const char*)buffer.data(), asn_rc.encoded);
+
+            asn_rc = der_encode_to_buffer(&asn_DEF_PrivateKeyInfo, &asn_private_key_info, &buffer[0], buffer.size());
+
+            result.reset(new ECPrivateKey(
+                buffer.data(), asn_rc.encoded, algo_param_oid, key_d
+            ));
+
+            ASN_STRUCT_FREE_CONTENTS_ONLY(asn_DEF_PrivateKeyInfo, &asn_private_key_info);
+
+            return result;
+        }
+        std::unique_ptr<jcp::AsymKey> MbedcryptoKeyUtils::makeEcpToPublicKey(mbedtls_ecp_keypair *ecp) {
+            mbedtls_pk_context pk;
+            int rc;
+            std::vector<unsigned char> buffer;
+            ec::ECPoint key_point;
+
+            MpiWrappedBigInteger key_point_x;
+            MpiWrappedBigInteger key_point_y;
+            MpiWrappedBigInteger key_point_z;
+
+            asn1::ASN1ObjectIdentifier algo_param_oid;
+            if(!setOidByECGroup(algo_param_oid, &ecp->grp)) {
+                return nullptr;
+            }
+
+            mbedtls_pk_init(&pk);
+            mbedtls_pk_setup(&pk, mbedtls_pk_info_from_type(MBEDTLS_PK_ECKEY));
+            mbedtls_ecp_group_copy(&(mbedtls_pk_ec(pk)->grp), &ecp->grp);
+            mbedtls_ecp_copy(&(mbedtls_pk_ec(pk)->Q), &ecp->Q);
+            mbedtls_mpi_copy(&(mbedtls_pk_ec(pk)->d), &ecp->d);
+
+            mbedtls_mpi_copy(key_point_x.mpi(), &ecp->Q.X);
+            mbedtls_mpi_copy(key_point_y.mpi(), &ecp->Q.Y);
+            mbedtls_mpi_copy(key_point_z.mpi(), &ecp->Q.Z);
+
+            buffer.resize(1024);
+            rc = mbedtls_pk_write_pubkey_der(&pk, &buffer[0], buffer.size());
+            mbedtls_pk_free(&pk);
+            if(rc > 0) {
+                const unsigned char *begin = buffer.data() + buffer.size() - rc;
+                return std::make_unique<ECPublicKey>(begin, rc, algo_param_oid, key_point);
             }
 
             return nullptr;

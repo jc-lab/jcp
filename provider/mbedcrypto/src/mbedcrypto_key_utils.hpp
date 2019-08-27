@@ -34,9 +34,12 @@ namespace jcp {
                 return setECKeyToPK(&ekp->grp, &ekp->d, &ekp->Q, key);
             }
             static bool loadECGroupByOid(mbedtls_ecp_group *grp, const asn1::ASN1ObjectIdentifier& oid);
+            static bool setOidByECGroup(asn1::ASN1ObjectIdentifier& oid, const mbedtls_ecp_group *grp);
 
             static std::unique_ptr<jcp::AsymKey> makeRsaToPrivateKey(mbedtls_rsa_context *rsa);
             static std::unique_ptr<jcp::AsymKey> makeRsaToPublicKey(mbedtls_rsa_context *rsa);
+            static std::unique_ptr<jcp::AsymKey> makeEcpToPrivateKey(mbedtls_ecp_keypair *ecp);
+            static std::unique_ptr<jcp::AsymKey> makeEcpToPublicKey(mbedtls_ecp_keypair *ecp);
         };
     }
 }

@@ -35,13 +35,16 @@ namespace jcp {
         static const KeyPairAlgorithm RSA;
 
         // Predefined EC Keys
-        static const KeyPairAlgorithm EC_secp112r1;
-        static const KeyPairAlgorithm EC_secp128r1;
         static const KeyPairAlgorithm EC_secp192r1;
         static const KeyPairAlgorithm EC_secp192k1;
         static const KeyPairAlgorithm EC_prime256v1;
         static const KeyPairAlgorithm EC_secp256r1;
         static const KeyPairAlgorithm EC_secp256k1;
+        static const KeyPairAlgorithm EC_secp384r1;
+        static const KeyPairAlgorithm EC_secp521r1;
+        static const KeyPairAlgorithm EC_bp256r1;
+        static const KeyPairAlgorithm EC_bp384r1;
+        static const KeyPairAlgorithm EC_bp512r1;
 
         KeyPairAlgorithm(uint32_t algo_id, const char *name);
 

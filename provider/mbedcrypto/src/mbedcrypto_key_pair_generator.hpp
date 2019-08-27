@@ -14,6 +14,8 @@
 #include "jcp/provider.hpp"
 #include "jcp/key_pair_generator.hpp"
 
+#include <mbedtls/ecp.h>
+
 namespace jcp {
 
     namespace mbedcrypto {
@@ -25,8 +27,10 @@ namespace jcp {
         };
 
         class MbedcryptoECKeyPairGeneratorFactory : public KeyPairGeneratorFactory {
+        private:
+            mbedtls_ecp_group_id ec_grp_id_;
         public:
-            MbedcryptoECKeyPairGeneratorFactory(Provider *provider) : KeyPairGeneratorFactory(provider){}
+            MbedcryptoECKeyPairGeneratorFactory(Provider *provider, mbedtls_ecp_group_id grp_id) : KeyPairGeneratorFactory(provider), ec_grp_id_(grp_id) {}
             std::unique_ptr<KeyPairGenerator> create() override;
         };
 

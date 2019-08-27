@@ -4,6 +4,9 @@
 
 #include "mbedcrypto_key_pair_generator.hpp"
 
+#include <jcp/exception/invalid_input.hpp>
+#include <jcp/exception/invalid_algo_param.hpp>
+
 #include <mbedtls/rsa.h>
 #include "mbedcrypto_key_utils.hpp"
 
@@ -28,7 +31,11 @@ namespace jcp {
                 }else{
                     secure_random_ = secure_random;
                 }
-                return jcp::Result<void>();
+                return jcp::ResultBuilder<void, void>().build();
+            }
+            Result<void> initialize(const AlgorithmParameterSpec *algo_param_spec,
+                                    jcp::SecureRandom *secure_random) override {
+                return jcp::ResultBuilder<void, jcp::exception::InvalidInputException>().withException().build();
             }
             Result<jcp::KeyPair> genKeyPair() override {
                 int rc;
@@ -49,13 +56,46 @@ namespace jcp {
         };
 
         class ECKeyPairGenerator : public KeyPairGenerator {
+        private:
+            mbedtls_ecp_group_id ec_grp_id_;
+            jcp::SecureRandom *secure_random_;
+            std::unique_ptr<jcp::SecureRandom> local_secure_random_;
+
+            void initCommon(jcp::SecureRandom *secure_random) {
+                if(!secure_random) {
+                    local_secure_random_ = jcp::SecureRandom::getInstance(provider_);
+                    if(!local_secure_random_)
+                        local_secure_random_ = jcp::SecureRandom::getInstance();
+                    secure_random_ = local_secure_random_.get();
+                }else{
+                    secure_random_ = secure_random;
+                }
+            }
+
         public:
-            ECKeyPairGenerator(Provider *provider) : KeyPairGenerator(provider) {}
+            ECKeyPairGenerator(Provider *provider, mbedtls_ecp_group_id ec_grp_id) : KeyPairGenerator(provider), ec_grp_id_(ec_grp_id) {}
+
             Result<void> initialize(int key_bits, jcp::SecureRandom *secure_random) override {
-                return jcp::Result<void>();
+                initCommon(secure_random);
+                return jcp::ResultBuilder<void, jcp::exception::InvalidInputException>().withException().build();
+            }
+            Result<void> initialize(const AlgorithmParameterSpec *algo_param_spec, jcp::SecureRandom *secure_random) override {
+                initCommon(secure_random);
+                return jcp::ResultBuilder<void, jcp::exception::InvalidInputException>().withException().build();
             }
             Result<jcp::KeyPair> genKeyPair() override {
-                return jcp::Result<jcp::KeyPair>();
+                mbedtls_ecp_keypair ecp;
+                mbedtls_ecp_keypair_init(&ecp);
+                mbedtls_ecp_gen_key(ec_grp_id_, &ecp, jcp::Random::random_cb, secure_random_);
+
+                Result<jcp::KeyPair> result = jcp::ResultBuilder<jcp::KeyPair, void>(
+                    std::move(MbedcryptoKeyUtils::makeEcpToPrivateKey(&ecp)),
+                    std::move(MbedcryptoKeyUtils::makeEcpToPublicKey(&ecp))
+                ).build();
+
+                mbedtls_ecp_keypair_free(&ecp);
+
+                return result;
             }
         };
 
@@ -64,7 +104,7 @@ namespace jcp {
         }
 
         std::unique_ptr<KeyPairGenerator> MbedcryptoECKeyPairGeneratorFactory::create() {
-            return std::make_unique<ECKeyPairGenerator>(provider_);
+            return std::make_unique<ECKeyPairGenerator>(provider_, ec_grp_id_);
         }
     }
 }

@@ -22,6 +22,8 @@ namespace jcp {
 
     class Provider;
 
+    class AlgorithmParameterSpec;
+
     class KeyPairGenerator {
     protected:
         Provider *provider_;
@@ -33,7 +35,8 @@ namespace jcp {
         KeyPairGenerator(Provider *provider) : provider_(provider) {}
         Provider *getProvider() const { return provider_; }
 
-        virtual jcp::Result<void> initialize(int key_bits, jcp::SecureRandom *secure_random) = 0;
+        virtual jcp::Result<void> initialize(int key_bits, jcp::SecureRandom *secure_random = NULL) = 0;
+        virtual jcp::Result<void> initialize(const AlgorithmParameterSpec *algo_param_spec, jcp::SecureRandom *secure_random = NULL) = 0;
         virtual jcp::Result<jcp::KeyPair> genKeyPair() = 0;
     };
 

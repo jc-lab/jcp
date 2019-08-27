@@ -16,13 +16,16 @@ namespace jcp {
     const KeyPairAlgorithm KeyPairAlgorithm::RSA(0x0b0101B5, "RSA");
 
     // Predefined EC Keys
-    const KeyPairAlgorithm KeyPairAlgorithm::EC_secp112r1(0x0b020133, "EC_secp112r1");
-    const KeyPairAlgorithm KeyPairAlgorithm::EC_secp128r1(0x0b0202BC, "EC_secp128r1");
     const KeyPairAlgorithm KeyPairAlgorithm::EC_secp192r1(0x0b0203E8, "EC_secp192r1");
     const KeyPairAlgorithm KeyPairAlgorithm::EC_secp192k1(0x0b020481, "EC_secp192k1");
     const KeyPairAlgorithm KeyPairAlgorithm::EC_prime256v1(0x0b02057A, "EC_prime256v1");
     const KeyPairAlgorithm KeyPairAlgorithm::EC_secp256r1(0x0b02067B, "EC_secp256r1");
     const KeyPairAlgorithm KeyPairAlgorithm::EC_secp256k1(0x0b02079E, "EC_secp256k1");
+    const KeyPairAlgorithm KeyPairAlgorithm::EC_secp384r1(0x0b02085A, "EC_secp384r1");
+    const KeyPairAlgorithm KeyPairAlgorithm::EC_secp521r1(0x0b020943, "EC_secp521r1");
+    const KeyPairAlgorithm KeyPairAlgorithm::EC_bp256r1(0x0b020a76, "EC_bp256r1");
+    const KeyPairAlgorithm KeyPairAlgorithm::EC_bp384r1(0x0b020bB4, "EC_bp384r1");
+    const KeyPairAlgorithm KeyPairAlgorithm::EC_bp512r1(0x0b020cE3, "EC_bp512r1");
 
     KeyPairAlgorithm::KeyPairAlgorithm(uint32_t algo_id, const char *name)
         : ordinal_(++static_ordinal_), algo_id_(algo_id), name_(name) {
@@ -30,13 +33,16 @@ namespace jcp {
 
     KeyPairAlgorithm::StaticInitializer::StaticInitializer() {
         list_.push_back(&RSA);
-        list_.push_back(&EC_secp112r1);
-        list_.push_back(&EC_secp128r1);
         list_.push_back(&EC_secp192r1);
         list_.push_back(&EC_secp192k1);
         list_.push_back(&EC_prime256v1);
         list_.push_back(&EC_secp256r1);
         list_.push_back(&EC_secp256k1);
+        list_.push_back(&EC_secp384r1);
+        list_.push_back(&EC_secp521r1);
+        list_.push_back(&EC_bp256r1);
+        list_.push_back(&EC_bp384r1);
+        list_.push_back(&EC_bp512r1);
     }
 
 }

@@ -116,6 +116,16 @@ namespace jcp {
         addKeyFactoryAlgorithm(&KeyFactoryAlgorithm::X509PublicKey, std::make_unique<mbedcrypto::MbedcryptoPKCS8KeyFactoryFactory>(this));
 
         addKeyPairGeneratorAlgorithm(&KeyPairAlgorithm::RSA, std::make_unique<mbedcrypto::MbedcryptoRSAKeyPairGeneratorFactory>(this));
+        addKeyPairGeneratorAlgorithm(&KeyPairAlgorithm::EC_secp192r1, std::make_unique<mbedcrypto::MbedcryptoECKeyPairGeneratorFactory>(this, MBEDTLS_ECP_DP_SECP192R1));
+        addKeyPairGeneratorAlgorithm(&KeyPairAlgorithm::EC_secp192k1, std::make_unique<mbedcrypto::MbedcryptoECKeyPairGeneratorFactory>(this, MBEDTLS_ECP_DP_SECP192K1));
+        addKeyPairGeneratorAlgorithm(&KeyPairAlgorithm::EC_secp256r1, std::make_unique<mbedcrypto::MbedcryptoECKeyPairGeneratorFactory>(this, MBEDTLS_ECP_DP_SECP256R1));
+        addKeyPairGeneratorAlgorithm(&KeyPairAlgorithm::EC_secp256k1, std::make_unique<mbedcrypto::MbedcryptoECKeyPairGeneratorFactory>(this, MBEDTLS_ECP_DP_SECP256K1));
+        addKeyPairGeneratorAlgorithm(&KeyPairAlgorithm::EC_prime256v1, std::make_unique<mbedcrypto::MbedcryptoECKeyPairGeneratorFactory>(this, MBEDTLS_ECP_DP_SECP256R1));
+        addKeyPairGeneratorAlgorithm(&KeyPairAlgorithm::EC_secp384r1, std::make_unique<mbedcrypto::MbedcryptoECKeyPairGeneratorFactory>(this, MBEDTLS_ECP_DP_SECP384R1));
+        addKeyPairGeneratorAlgorithm(&KeyPairAlgorithm::EC_secp521r1, std::make_unique<mbedcrypto::MbedcryptoECKeyPairGeneratorFactory>(this, MBEDTLS_ECP_DP_SECP521R1));
+        addKeyPairGeneratorAlgorithm(&KeyPairAlgorithm::EC_bp256r1, std::make_unique<mbedcrypto::MbedcryptoECKeyPairGeneratorFactory>(this, MBEDTLS_ECP_DP_BP256R1));
+        addKeyPairGeneratorAlgorithm(&KeyPairAlgorithm::EC_bp384r1, std::make_unique<mbedcrypto::MbedcryptoECKeyPairGeneratorFactory>(this, MBEDTLS_ECP_DP_BP384R1));
+        addKeyPairGeneratorAlgorithm(&KeyPairAlgorithm::EC_bp512r1, std::make_unique<mbedcrypto::MbedcryptoECKeyPairGeneratorFactory>(this, MBEDTLS_ECP_DP_BP512R1));
     }
 
 } // namespace jcp
