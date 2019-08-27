@@ -2,7 +2,7 @@
 // Created by jichan on 2019-08-20.
 //
 
-#include "mbedcrypto_key_utils.hpp"
+#include <jcp/mbedcrypto_key_utils.hpp>
 
 #include <jcp/asn1/asn1_object_identifier.hpp>
 
@@ -77,19 +77,6 @@ namespace jcp {
                 OCTET_STRING_fromBuf(container, (const char*)&buf[0], buf.size());
             }
         };
-
-        jcp::Result<std::unique_ptr<AsymKey>> MbedcryptoKeyUtils::decodePkcs8PrivateKey(const unsigned char *der, int der_length) const {
-            return nullptr;
-        }
-        jcp::Result<Buffer> MbedcryptoKeyUtils::encodePkcs8PrivateKey(const AsymKey *key) const {
-            return  nullptr;
-        }
-        jcp::Result<std::unique_ptr<AsymKey>> MbedcryptoKeyUtils::decodeX509PublicKey(const unsigned char *der, int der_length) const {
-            return  nullptr;
-        }
-        jcp::Result<Buffer> MbedcryptoKeyUtils::encodeX509PublicKey(const AsymKey *key) const {
-            return  nullptr;
-        }
 
         bool MbedcryptoKeyUtils::checkOid(const asn1::ASN1ObjectIdentifier& child, const asn1::ASN1ObjectIdentifier &parent) {
             return child.equals(parent) || child.on(parent);

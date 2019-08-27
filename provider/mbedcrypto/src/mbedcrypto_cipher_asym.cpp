@@ -14,7 +14,7 @@
 
 #include "jcp/secure_random.hpp"
 
-#include "mbedcrypto_key_utils.hpp"
+#include "jcp/mbedcrypto_key_utils.hpp"
 
 #include <mbedtls/md.h>
 #include <mbedtls/pk.h>

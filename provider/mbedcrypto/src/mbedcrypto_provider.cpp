@@ -25,7 +25,7 @@
 #include "mbedcrypto_md.hpp"
 #include "mbedcrypto_ka_ecdh.hpp"
 #include "mbedcrypto_sign.hpp"
-#include "mbedcrypto_key_utils.hpp"
+#include "jcp/mbedcrypto_key_utils.hpp"
 #include "mbedcrypto_key_factory.hpp"
 #include "mbedcrypto_key_pair_generator.hpp"
 

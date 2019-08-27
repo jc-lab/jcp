@@ -2,7 +2,7 @@
 // Created by jichan on 2019-08-20.
 //
 
-#include "openssl_key_utils.hpp"
+#include "jcp/openssl_key_utils.hpp"
 
 #include <jcp/asn1/asn1_object_identifier.hpp>
 
@@ -18,19 +18,6 @@
 
 namespace jcp {
     namespace openssl {
-
-        jcp::Result<std::unique_ptr<AsymKey>> OpensslKeyUtils::decodePkcs8PrivateKey(const unsigned char *der, int der_length) const {
-            return nullptr;
-        }
-        jcp::Result<Buffer> OpensslKeyUtils::encodePkcs8PrivateKey(const AsymKey *key) const {
-            return  nullptr;
-        }
-        jcp::Result<std::unique_ptr<AsymKey>> OpensslKeyUtils::decodeX509PublicKey(const unsigned char *der, int der_length) const {
-            return  nullptr;
-        }
-        jcp::Result<Buffer> OpensslKeyUtils::encodeX509PublicKey(const AsymKey *key) const {
-            return  nullptr;
-        }
 
         bool OpensslKeyUtils::checkOid(const asn1::ASN1ObjectIdentifier& child, const asn1::ASN1ObjectIdentifier &parent) {
             return child.equals(parent) || child.on(parent);

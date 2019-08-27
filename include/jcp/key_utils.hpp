@@ -22,11 +22,6 @@ namespace jcp {
         KeyUtils(Provider *provider) : provider_(provider) {}
 
         static const KeyUtils* getInstance(Provider *provider = NULL);
-
-        virtual jcp::Result<std::unique_ptr<AsymKey>> decodePkcs8PrivateKey(const unsigned char *der, int der_length) const = 0;
-        virtual jcp::Result<Buffer> encodePkcs8PrivateKey(const AsymKey *key) const = 0;
-        virtual jcp::Result<std::unique_ptr<AsymKey>> decodeX509PublicKey(const unsigned char *der, int der_length) const = 0;
-        virtual jcp::Result<Buffer> encodeX509PublicKey(const AsymKey *key) const = 0;
     };
 
 }

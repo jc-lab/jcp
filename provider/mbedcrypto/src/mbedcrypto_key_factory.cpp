@@ -13,7 +13,7 @@
 #include <jcp/ec_public_key.hpp>
 
 #include "mbedcrypto_key_factory.hpp"
-#include "mbedcrypto_key_utils.hpp"
+#include "jcp/mbedcrypto_key_utils.hpp"
 
 namespace jcp {
     namespace mbedcrypto {

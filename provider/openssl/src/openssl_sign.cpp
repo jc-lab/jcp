@@ -16,7 +16,7 @@
 #include <jcp/exception/general.hpp>
 
 #include "jcp/message_digest.hpp"
-#include "openssl_key_utils.hpp"
+#include "jcp/openssl_key_utils.hpp"
 
 #include <openssl/evp.h>
 

@@ -7,7 +7,7 @@
  *            of the Apache License 2.0.  See the LICENSE file for details.
  */
 #include "openssl_cipher_asym.hpp"
-#include "openssl_key_utils.hpp"
+#include "jcp/openssl_key_utils.hpp"
 
 #include <jcp/exception/general.hpp>
 #include <jcp/exception/invalid_input.hpp>

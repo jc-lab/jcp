@@ -5,7 +5,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
 set(CMAKE_CXX_STANDARD 11)
 
-add_library(jcp_provider_mbedcrypto src/mbedcrypto_cipher_asym.cpp src/mbedcrypto_cipher_sym.cpp src/mbedcrypto_ka_ecdh.cpp src/mbedcrypto_md.cpp src/mbedcrypto_provider.cpp src/mbedcrypto_securerandom.cpp src/mbedcrypto_sign.cpp src/mbedcrypto_key_utils.cpp src/mbedcrypto_key_factory.hpp src/mbedcrypto_key_factory.cpp src/mbedcrypto_key_pair_generator.hpp src/mbedcrypto_key_pair_generator.cpp)
+add_library(jcp_provider_mbedcrypto src/mbedcrypto_cipher_asym.cpp src/mbedcrypto_cipher_sym.cpp src/mbedcrypto_ka_ecdh.cpp src/mbedcrypto_md.cpp src/mbedcrypto_provider.cpp src/mbedcrypto_securerandom.cpp src/mbedcrypto_sign.cpp ../../include/jcp/mbedcrypto_key_utils.hpp src/mbedcrypto_key_utils.cpp src/mbedcrypto_key_factory.hpp src/mbedcrypto_key_factory.cpp src/mbedcrypto_key_pair_generator.hpp src/mbedcrypto_key_pair_generator.cpp)
 
 find_package(MbedCrypto REQUIRED)
 if(MBEDCRYPTO_FOUND  AND  MBEDCRYPTO_INCLUDE_DIR  AND  MBEDCRYPTO_LIBRARIES)

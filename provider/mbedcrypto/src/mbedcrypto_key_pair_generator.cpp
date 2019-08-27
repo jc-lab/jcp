@@ -8,7 +8,7 @@
 #include <jcp/exception/invalid_algo_param.hpp>
 
 #include <mbedtls/rsa.h>
-#include "mbedcrypto_key_utils.hpp"
+#include "jcp/mbedcrypto_key_utils.hpp"
 
 namespace jcp {
     namespace mbedcrypto {

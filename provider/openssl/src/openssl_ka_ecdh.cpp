@@ -14,7 +14,7 @@
 #include <jcp/exception/general.hpp>
 
 #include "jcp/secure_random.hpp"
-#include "openssl_key_utils.hpp"
+#include "jcp/openssl_key_utils.hpp"
 
 #include <openssl/ecdh.h>
 
