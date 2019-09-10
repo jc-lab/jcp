@@ -16,6 +16,14 @@
 #include <openssl/ec.h>
 #include <openssl/objects.h>
 
+/* Openssl 1.1.0 broke compatibility. We could depend on openssl 1.1.0, but
+ * it may take some time before distributions are able to upgrade to the new
+ * openssl version. To insulate ourselves from such transition problems, let's
+ * add a compatibility macro. */
+#if OPENSSL_VERSION_NUMBER < 0x10100000L
+#define RSA_set0_key(r, n_, e_, d) (r->n = n_, r->e = e_, 1)
+#endif
+
 namespace jcp {
     namespace openssl {
 
