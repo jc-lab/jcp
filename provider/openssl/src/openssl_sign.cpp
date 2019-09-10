@@ -48,7 +48,7 @@ namespace jcp {
 				std::vector<unsigned char> buf;
 			};
 
-#if OPENSSL_VERSION_NUMBER < 0x01010000
+#if OPENSSL_VERSION_NUMBER < 0x10010000
 			static void MY_EVP_PLAIN_MD_free(EVP_MD* md) {
 				free(md);
 			}
@@ -135,22 +135,7 @@ namespace jcp {
                 EVP_MD_meth_set_result_size(md, ctximpl->buf.size());
             }
 
-            void initCommon(const AsymKey *key) {
-			    const ECKey *key_ec = dynamic_cast<const ECKey *>(key);
-                const RSAKey *key_rsa = dynamic_cast<const RSAKey *>(key);
-
-                OpensslKeyUtils key_utils(getProvider());
-                pkey_.reset(EVP_PKEY_new());
-                if (key_ec) {
-                    EC_KEY *eckey = EC_KEY_new();
-                    key_utils.setECKeyToPK(eckey, key_ec);
-                    EVP_PKEY_set1_EC_KEY(pkey_.get(), eckey);
-                } else if (key_rsa) {
-                    RSA *rsa = RSA_new();
-                    key_utils.setRSAKeyToPK(rsa, key_rsa);
-                    EVP_PKEY_set1_RSA(pkey_.get(), rsa);
-                }
-
+            void initCommon() {
                 if (!md_) {
                     EVP_MD* ptr = EVP_MD_meth_new(NID_sha256, 0);
                     EVP_MD_meth_set_app_datasize(ptr, sizeof(MY_EVP_PLAIN_MD_ctx));
@@ -164,6 +149,24 @@ namespace jcp {
             }
 #endif
 
+			void initKey(const AsymKey *key) {
+				const ECKey* key_ec = dynamic_cast<const ECKey*>(key);
+				const RSAKey* key_rsa = dynamic_cast<const RSAKey*>(key);
+
+				OpensslKeyUtils key_utils(getProvider());
+				pkey_.reset(EVP_PKEY_new());
+				if (key_ec) {
+					EC_KEY* eckey = EC_KEY_new();
+					key_utils.setECKeyToPK(eckey, key_ec);
+					EVP_PKEY_set1_EC_KEY(pkey_.get(), eckey);
+				}
+				else if (key_rsa) {
+					RSA* rsa = RSA_new();
+					key_utils.setRSAKeyToPK(rsa, key_rsa);
+					EVP_PKEY_set1_RSA(pkey_.get(), rsa);
+				}
+			}
+
         public:
             OpensslSign(Provider *provider, const EVP_MD* md)
                 : Signature(provider), md_(md), ctx_(EVP_MD_CTX_create(), EVP_MD_CTX_destroy), pkey_(NULL, EVP_PKEY_free), plain_md_(NULL, MY_EVP_PLAIN_MD_free)
@@ -175,7 +178,8 @@ namespace jcp {
 
 				verify_mode_ = false;
 
-				initCommon(key);
+				initKey(key);
+				initCommon();
 
 				rc = EVP_DigestSignInit(ctx_.get(), NULL, md_, NULL, pkey_.get());
 				if (rc != 1) {
@@ -189,7 +193,8 @@ namespace jcp {
 
 				verify_mode_ = false;
 
-				initCommon(key);
+				initKey(key);
+				initCommon();
 
 				rc = EVP_DigestVerifyInit(ctx_.get(), NULL, md_, NULL, pkey_.get());
 				if (rc != 1) {
