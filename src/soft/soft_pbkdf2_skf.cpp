@@ -35,6 +35,7 @@ namespace jcp {
             std::vector<unsigned char> U_i(pbe_key_spec->getSalt().size() + 4);
 
             for (int i = 1; i <= l; i++) {
+		memset(U_r.data(), 0, U_r.size());
                 F(&Tbuf[0], ti_offset, prf.get(), pbe_key_spec, i, &U_r[0], &U_i[0]);
                 ti_offset += hLen;
             }
