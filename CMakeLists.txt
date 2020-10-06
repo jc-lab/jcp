@@ -24,6 +24,11 @@ include_directories(include)
 include_directories(include/jcp/internal/asn1c)
 
 add_library(jcp ${JCP_SRC_INCLUDE} ${JCP_SRC_BASE} ${JCP_SRC_UTIL} ${JCP_SRC_ASN1C} ${JCP_SRC_ASN1C_TYPES} ${JCP_SRC_ASN1_X9} ${JCP_SRC_ASN1_SEC} ${JCP_SRC_ASN1_PKCS8} ${JCP_SRC_ASN1_EDEC} ${JCP_SRC_ASN1_TELETRUST} ${JCP_SRC_INTERNAL} ${JCP_SRC_SOFT})
+target_include_directories(jcp
+        PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/jcp/internal/asn1c
+        )
 
 IF(${JCP_USE_OPENSSL})
     add_subdirectory(provider/openssl)
